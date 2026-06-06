@@ -16,7 +16,9 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.100.1",
     "dotenv": "^17.4.2",
-    "express": "^4.22.2",
+    "express": "^4.22.2"
+  },
+  "devDependencies": {
     "playwright": "^1.60.0"
   }
 }
