@@ -248,11 +248,11 @@ renderer.toneMappingExposure=1.15;
 const scene=new THREE.Scene();
 scene.background=new THREE.Color('#F8F3EC');
 const camera=new THREE.PerspectiveCamera(42,1,0.1,20);
-camera.position.set(0,0.1,-5.8);
+camera.position.set(0,0.5,-6.5);
 const controls=new THREE.OrbitControls(camera,gcanvas);
 controls.enableDamping=true;controls.dampingFactor=0.07;
-controls.minDistance=2.5;controls.maxDistance=9;
-controls.target.set(0,0.1,0.21);controls.update();
+controls.minDistance=2.5;controls.maxDistance=11;
+controls.target.set(0,0.4,0.21);controls.update();
 scene.add(new THREE.AmbientLight(0xfff5e4,0.70));
 const kL=new THREE.DirectionalLight(0xfffde8,1.15);kL.position.set(-1.5,3.5,-4);scene.add(kL);
 const fL=new THREE.DirectionalLight(0xffe8cc,0.50);fL.position.set(1.5,2.0,4);scene.add(fL);
@@ -267,62 +267,98 @@ const mats={
   stitching:new THREE.MeshStandardMaterial({color:'#8B6914',roughness:0.88,metalness:0.01}),
 };
 
-const DEPTH=0.42;
+const DEPTH=0.40;
 const glove=new THREE.Group();
-glove.position.set(0.1,0,0);
 scene.add(glove);
 
-// 2D glove silhouette: back view, right-hand glove (thumb right, pinky left)
-const shape=new THREE.Shape();
-shape.moveTo(-0.63,-2.02);
-shape.bezierCurveTo(-1.30,-1.30,-1.52,-0.55,-1.35,0.58);
-shape.bezierCurveTo(-1.26,1.08,-1.28,1.60,-1.40,1.92);
-shape.quadraticCurveTo(-1.46,2.28,-1.28,2.46);
-shape.quadraticCurveTo(-1.08,2.60,-0.88,2.46);
-shape.quadraticCurveTo(-0.70,2.28,-0.72,2.02);
-shape.bezierCurveTo(-0.74,1.90,-0.70,1.82,-0.64,1.84);
-shape.bezierCurveTo(-0.58,1.86,-0.56,1.92,-0.58,2.04);
-shape.bezierCurveTo(-0.60,2.20,-0.58,2.40,-0.52,2.58);
-shape.quadraticCurveTo(-0.38,2.72,-0.22,2.64);
-shape.quadraticCurveTo(-0.08,2.50,-0.10,2.30);
-shape.bezierCurveTo(-0.12,2.08,-0.14,1.88,-0.14,1.76);
-shape.bezierCurveTo(-0.10,1.66,-0.04,1.62,0.00,1.66);
-shape.bezierCurveTo(0.04,1.70,0.04,1.78,0.02,1.90);
-shape.bezierCurveTo(0.02,2.12,0.06,2.40,0.12,2.62);
-shape.quadraticCurveTo(0.24,2.80,0.38,2.72);
-shape.quadraticCurveTo(0.50,2.60,0.48,2.40);
-shape.bezierCurveTo(0.46,2.14,0.44,1.90,0.42,1.76);
-shape.bezierCurveTo(0.46,1.64,0.52,1.60,0.56,1.64);
-shape.bezierCurveTo(0.60,1.68,0.60,1.78,0.58,1.90);
-shape.bezierCurveTo(0.58,2.12,0.62,2.36,0.70,2.56);
-shape.quadraticCurveTo(0.82,2.70,0.98,2.62);
-shape.quadraticCurveTo(1.10,2.48,1.06,2.26);
-shape.bezierCurveTo(1.02,2.02,0.98,1.80,0.94,1.64);
-shape.bezierCurveTo(0.90,1.46,1.06,1.22,1.22,1.08);
-shape.bezierCurveTo(1.56,0.80,1.82,0.52,1.86,0.22);
-shape.quadraticCurveTo(1.92,-0.05,1.78,-0.26);
-shape.bezierCurveTo(1.64,-0.44,1.36,-0.50,1.16,-0.32);
-shape.bezierCurveTo(1.00,-0.16,1.04,-0.92,0.90,-1.52);
-shape.bezierCurveTo(0.76,-1.87,0.64,-2.02,0.63,-2.02);
-shape.quadraticCurveTo(0.0,-2.22,-0.63,-2.02);
-
-glove.add(new THREE.Mesh(new THREE.ExtrudeGeometry(shape,{
-  depth:DEPTH,bevelEnabled:true,bevelThickness:0.055,bevelSize:0.044,bevelSegments:5,curveSegments:48
+// ── PALM BODY (elliptical extrusion) ──────────────────────────────────
+const palmShape=new THREE.Shape();
+palmShape.absellipse(0,-0.45,1.00,1.52,0,Math.PI*2,false,0);
+glove.add(new THREE.Mesh(new THREE.ExtrudeGeometry(palmShape,{
+  depth:DEPTH,bevelEnabled:true,bevelThickness:0.06,bevelSize:0.05,bevelSegments:4,curveSegments:32
 }),mats.back));
 
-// Palm leather oval on front face
-const palmOval=new THREE.Shape();
-palmOval.absellipse(-0.06,-0.28,0.84,0.78,0,Math.PI*2,false,0);
-const palmMesh=new THREE.Mesh(new THREE.ShapeGeometry(palmOval,48),mats.palm);
-palmMesh.position.z=DEPTH+0.01;
-glove.add(palmMesh);
+// ── WRIST (below palm) ────────────────────────────────────────────────
+const wristShape=new THREE.Shape();
+wristShape.absellipse(0,0,0.56,0.26,0,Math.PI*2,false,0);
+const wristM=new THREE.Mesh(new THREE.ExtrudeGeometry(wristShape,{depth:DEPTH,bevelEnabled:false,curveSegments:16}),mats.back);
+wristM.position.set(0,-2.10,0);
+glove.add(wristM);
+// Connector strip palm → wrist
+const connGeo=new THREE.BoxGeometry(1.10,0.42,DEPTH);
+const connM=new THREE.Mesh(connGeo,mats.back);
+connM.position.set(0,-1.94,DEPTH/2);
+glove.add(connM);
+// Wrist binding band
+const wbShape=new THREE.Shape();
+wbShape.absellipse(0,-2.10,0.58,0.28,0,Math.PI*2,false,0);
+const wbM=new THREE.Mesh(new THREE.ShapeGeometry(wbShape,24),mats.binding);
+wbM.position.z=-0.01;
+glove.add(wbM);
 
-// Web group
+// ── FINGER TUBES ──────────────────────────────────────────────────────
+// [cx, baseY, tipY, radius]
+const FDATA=[
+  [-0.72, 0.94, 2.30, 0.150],  // pinky
+  [-0.28, 0.88, 2.62, 0.168],  // ring
+  [ 0.16, 0.84, 2.84, 0.185],  // middle
+  [ 0.60, 0.88, 2.64, 0.170],  // index
+];
+const HZ=DEPTH/2;
+FDATA.forEach(([cx,baseY,tipY,r])=>{
+  const pts=[
+    new THREE.Vector3(cx,baseY,HZ),
+    new THREE.Vector3(cx,baseY+(tipY-baseY)*0.5,HZ+0.02),
+    new THREE.Vector3(cx,tipY,HZ-0.05),
+  ];
+  const curve=new THREE.CatmullRomCurve3(pts);
+  glove.add(new THREE.Mesh(new THREE.TubeGeometry(curve,14,r,10,false),mats.back));
+  // Rounded fingertip
+  const cap=new THREE.Mesh(new THREE.SphereGeometry(r,10,8),mats.back);
+  cap.position.set(cx,tipY,HZ-0.05);
+  glove.add(cap);
+  // Binding ring at tip
+  const bRing=new THREE.Mesh(new THREE.TorusGeometry(r+0.01,0.030,6,18),mats.binding);
+  bRing.rotation.x=Math.PI/2;
+  bRing.position.set(cx,tipY-0.06,HZ-0.05);
+  glove.add(bRing);
+});
+
+// Finger gap lace dots
+[[-0.50,1.30],[-0.50,1.10],[-0.06,1.32],[-0.06,1.12],[0.38,1.30],[0.38,1.10]].forEach(([x,y])=>{
+  const m=new THREE.Mesh(new THREE.SphereGeometry(0.048,8,6),mats.laces);
+  m.position.set(x,y,-0.04);glove.add(m);
+});
+
+// ── THUMB TUBE ────────────────────────────────────────────────────────
+const thumbPts=[
+  new THREE.Vector3(0.88,0.78,HZ),
+  new THREE.Vector3(1.42,0.44,HZ-0.02),
+  new THREE.Vector3(1.78,0.06,HZ-0.06),
+];
+const thumbCurve=new THREE.CatmullRomCurve3(thumbPts);
+glove.add(new THREE.Mesh(new THREE.TubeGeometry(thumbCurve,14,0.235,10,false),mats.back));
+const thumbCap=new THREE.Mesh(new THREE.SphereGeometry(0.235,10,8),mats.back);
+thumbCap.position.set(1.78,0.06,HZ-0.06);
+glove.add(thumbCap);
+const thumbBand=new THREE.Mesh(new THREE.TorusGeometry(0.245,0.030,6,18),mats.binding);
+thumbBand.rotation.x=Math.PI/2;
+thumbBand.position.set(1.78,0.10,HZ-0.06);
+glove.add(thumbBand);
+
+// ── PALM LEATHER OVERLAY (front face) ────────────────────────────────
+const palmLeatherShape=new THREE.Shape();
+palmLeatherShape.absellipse(-0.04,-0.46,0.76,0.72,0,Math.PI*2,false,0);
+const palmLeatherM=new THREE.Mesh(new THREE.ShapeGeometry(palmLeatherShape,48),mats.palm);
+palmLeatherM.position.z=DEPTH+0.01;
+glove.add(palmLeatherM);
+
+// ── WEB GROUP ─────────────────────────────────────────────────────────
 const webGroup=new THREE.Group();
 glove.add(webGroup);
 
 function addWebBar(x1,y1,x2,y2,z){
-  const dx=x2-x1,dy=y2-y1,len=Math.sqrt(dx*dx+dy*dy),hw=0.055;
+  const dx=x2-x1,dy=y2-y1,len=Math.sqrt(dx*dx+dy*dy),hw=0.052;
   const nx=(-dy/len)*hw,ny=(dx/len)*hw;
   const s=new THREE.Shape();
   s.moveTo(x1+nx,y1+ny);s.lineTo(x2+nx,y2+ny);s.lineTo(x2-nx,y2-ny);s.lineTo(x1-nx,y1-ny);s.closePath();
@@ -334,40 +370,23 @@ function updateWeb(){
   while(webGroup.children.length)webGroup.remove(webGroup.children[0]);
   const W=-0.01;
   if(ST.web==='i-web'||ST.web==='single-post'){
-    addWebBar(1.02,0.98,1.08,-0.12,W);
-    addWebBar(0.88,0.52,1.40,0.38,W);
+    addWebBar(0.80,0.84,1.06,0.00,W);
+    addWebBar(0.66,0.46,1.42,0.30,W);
   }else if(ST.web==='h-web'){
-    addWebBar(0.98,0.98,1.04,-0.12,W);
-    addWebBar(1.14,0.98,1.20,-0.12,W);
-    addWebBar(0.86,0.50,1.38,0.40,W);
+    addWebBar(0.78,0.84,0.86,0.00,W);
+    addWebBar(0.96,0.84,1.04,0.00,W);
+    addWebBar(0.64,0.44,1.40,0.28,W);
   }else{
     const bs=new THREE.Shape();
-    bs.moveTo(0.90,1.02);bs.bezierCurveTo(1.12,1.06,1.44,0.82,1.46,0.48);
-    bs.bezierCurveTo(1.48,0.14,1.36,-0.06,1.14,-0.20);
-    bs.lineTo(1.00,-0.24);bs.bezierCurveTo(0.86,-0.02,0.82,0.30,0.80,0.56);
-    bs.bezierCurveTo(0.78,0.82,0.78,0.98,0.90,1.02);
+    bs.moveTo(0.72,0.86);bs.bezierCurveTo(0.96,0.88,1.36,0.70,1.42,0.38);
+    bs.bezierCurveTo(1.48,0.06,1.36,-0.10,1.14,-0.18);
+    bs.lineTo(1.00,-0.22);bs.bezierCurveTo(0.82,-0.04,0.74,0.22,0.68,0.46);
+    bs.bezierCurveTo(0.62,0.68,0.62,0.84,0.72,0.86);
     const bm=new THREE.Mesh(new THREE.ShapeGeometry(bs,32),mats.web);
     bm.position.z=W;webGroup.add(bm);
   }
 }
 window.updateWeb=updateWeb;
-
-// Binding tubes at fingertips
-function addTube(pts,mat){
-  const curve=new THREE.CatmullRomCurve3(pts.map(p=>new THREE.Vector3(p[0],p[1],p[2])));
-  glove.add(new THREE.Mesh(new THREE.TubeGeometry(curve,pts.length*2,0.036,6,false),mat));
-}
-addTube([[-1.44,2.20,-0.02],[-1.28,2.46,-0.02],[-1.08,2.60,-0.02],[-0.88,2.46,-0.02],[-0.70,2.28,-0.02]],mats.binding);
-addTube([[-0.62,2.04,-0.02],[-0.52,2.58,-0.02],[-0.38,2.72,-0.02],[-0.22,2.64,-0.02],[-0.10,2.30,-0.02]],mats.binding);
-addTube([[-0.14,1.76,-0.02],[0.12,2.62,-0.02],[0.24,2.80,-0.02],[0.38,2.72,-0.02],[0.48,2.40,-0.02]],mats.binding);
-addTube([[0.42,1.76,-0.02],[0.70,2.56,-0.02],[0.82,2.70,-0.02],[0.98,2.62,-0.02],[1.06,2.26,-0.02]],mats.binding);
-addTube([[1.22,1.08,-0.02],[1.52,0.76,-0.02],[1.82,0.48,-0.02],[1.90,0.14,-0.02]],mats.binding);
-
-// Lace dots between fingers
-[[-0.64,1.96],[-0.64,1.84],[0.00,1.94],[0.00,1.84],[0.54,1.92],[0.54,1.82]].forEach(([x,y])=>{
-  const m=new THREE.Mesh(new THREE.SphereGeometry(0.046,8,6),mats.laces);
-  m.position.set(x,y,-0.05);glove.add(m);
-});
 
 // Resize canvas
 function onResize(){
@@ -383,7 +402,7 @@ window.addEventListener('resize',onResize);onResize();
 function setView(v){
   document.querySelectorAll('.vbtn').forEach(b=>b.classList.remove('on'));
   event.target.classList.add('on');
-  const vp={back:[0,0.1,-5.8,0,0.1,0.21],palm:[0,0.1,6.0,0,0.1,0.21],side:[4.3,0.1,0.21,0,0.1,0.21]}[v]||[0,0.1,-5.8,0,0.1,0.21];
+  const vp={back:[0,0.5,-6.5,0,0.4,0.21],palm:[0,0.5,6.8,0,0.4,0.21],side:[4.5,0.5,0.21,0,0.4,0.21]}[v]||[0,0.5,-6.5,0,0.4,0.21];
   camera.position.set(vp[0],vp[1],vp[2]);controls.target.set(vp[3],vp[4],vp[5]);controls.update();
 }
 window.setView=setView;
