@@ -200,26 +200,16 @@ tbr.rotation_euler = (0.0, math.radians(38), 0.0)
 bpy.ops.object.transform_apply(scale=True, rotation=True, location=False)
 tbr.data.materials.append(MAT["binding"])
 
-# ── 6. 虎口網（I-web） ────────────────────────────────────────────────────
-# 縱條
-bpy.ops.mesh.primitive_cube_add(location=(1.06, 0.0, 0.44))
-vbar = bpy.context.active_object
-vbar.name = "Web_VBar"
-vbar.scale = (0.055, 0.14, 0.50)
+# ── 6. 虎口邊框條（thumb-index bridge，不含 web 條：web 由 Three.js 程式生成） ──
+# 留一條薄框讓 web 有視覺基底
+bpy.ops.mesh.primitive_cube_add(location=(0.88, 0.0, 0.55))
+bridge = bpy.context.active_object
+bridge.name = "WebBridge"
+bridge.scale = (0.042, 0.10, 0.30)
 bpy.ops.object.transform_apply(scale=True, location=False)
-vbar.rotation_euler = (0.0, math.radians(-12), 0.0)
+bridge.rotation_euler = (0.0, math.radians(-10), 0.0)
 bpy.ops.object.transform_apply(rotation=True, location=False)
-vbar.data.materials.append(MAT["web"])
-
-# 橫條
-bpy.ops.mesh.primitive_cube_add(location=(1.06, 0.0, 0.38))
-hbar = bpy.context.active_object
-hbar.name = "Web_HBar"
-hbar.scale = (0.34, 0.12, 0.048)
-bpy.ops.object.transform_apply(scale=True, location=False)
-hbar.rotation_euler = (0.0, math.radians(-12), 0.0)
-bpy.ops.object.transform_apply(rotation=True, location=False)
-hbar.data.materials.append(MAT["web"])
+bridge.data.materials.append(MAT["binding"])
 
 # ── 7. 指縫綁繩小球 ──────────────────────────────────────────────────────
 lace_positions = [

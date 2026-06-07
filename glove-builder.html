@@ -275,7 +275,7 @@ scene.add(glove);
 const webGroup=new THREE.Group();
 glove.add(webGroup);
 
-const W=0.22; // z offset: slightly in front of GLB back face (which is at z≈+0.19)
+const W=0.42; // in front of GLB back face (Blender Y=-0.38 → Three.js Z≈+0.38)
 
 function addWebBar(x1,y1,x2,y2,z){
   const dx=x2-x1,dy=y2-y1,len=Math.sqrt(dx*dx+dy*dy),hw=0.055;
