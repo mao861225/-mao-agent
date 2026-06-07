@@ -506,7 +506,7 @@ async function doSubmit(){
   btn.disabled=true; btn.textContent=t.submitting;
   const payload={hand:ST.hand,size:ST.size,web:ST.web,stiffness:ST.stiff,colors:Object.fromEntries(Object.entries(ST.colors).map(([k,v])=>[k,v.n])),thumbText:document.getElementById('thumbTxt').value,pinkyText:document.getElementById('pinkyTxt').value,palmText:document.getElementById('palmTxt').value,wristText:document.getElementById('wristTxt').value,specialNotes:document.getElementById('notesTxt').value,customerName:name,customerEmail:email,customerPhone:document.getElementById('cPhone').value};
   try{
-    const res=await fetch('https://mao-agent.onrender.com/order',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    const res=await fetch('https://anan53.onrender.com/order',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
     if(!res.ok)throw new Error('server error');
     document.querySelectorAll('.sc').forEach(el=>el.style.display='none');
     const sc=document.getElementById('succScreen'); sc.style.display='block';
