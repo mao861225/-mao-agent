@@ -78,8 +78,7 @@ textarea.inp{height:90px;resize:vertical}
 .preview{padding:28px 20px;position:sticky;top:114px;height:calc(100vh - 114px);overflow-y:auto;display:flex;flex-direction:column;gap:18px;background:var(--surface);border-left:1px solid var(--border)}
 .pvlabel{font-family:'Fahkwang',sans-serif;font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
 .gbox{background:#F8F3EC;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;height:300px;display:flex;align-items:center;justify-content:center;position:relative}
-.gbox svg{max-height:290px;width:auto;display:block}
-.view-panel{display:none}.view-panel.on{display:flex;align-items:center;justify-content:center;width:100%;height:100%}
+#gcanvas{display:block;width:100%;height:100%}
 .vbtns{display:flex;gap:5px;margin-top:10px}
 .vbtn{flex:1;padding:7px 0;border-radius:var(--r);border:1.5px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;font-size:11px;font-weight:600;font-family:'Montserrat',sans-serif;transition:var(--t)}
 .vbtn:hover,.vbtn.on{background:var(--accent);color:#fff;border-color:var(--accent)}
@@ -96,6 +95,8 @@ textarea.inp{height:90px;resize:vertical}
 .succ p{color:var(--muted);line-height:1.7;font-size:14px}
 @media(max-width:760px){.main{grid-template-columns:1fr}.preview{position:static;height:auto;border-left:none;border-top:1px solid var(--border)}.stab .slbl{display:none}}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 </head>
 <body>
 <header class="hdr">
@@ -188,156 +189,9 @@ textarea.inp{height:90px;resize:vertical}
   <div>
     <p class="pvlabel" data-k="preview">預覽</p>
     <div class="gbox" id="gbox">
-      <!-- BACK VIEW -->
-      <div class="view-panel on" id="vp-back">
-        <svg viewBox="0 0 280 390" xmlns="http://www.w3.org/2000/svg" id="glove-back">
-          <defs>
-            <radialGradient id="rgB" cx="38%" cy="32%" r="62%"><stop offset="0%" stop-color="#fff" stop-opacity=".22"/><stop offset="100%" stop-color="#000" stop-opacity=".18"/></radialGradient>
-            <radialGradient id="rgT" cx="35%" cy="30%" r="60%"><stop offset="0%" stop-color="#fff" stop-opacity=".2"/><stop offset="100%" stop-color="#000" stop-opacity=".15"/></radialGradient>
-          </defs>
-          <!-- drop shadow -->
-          <ellipse cx="136" cy="382" rx="90" ry="8" fill="rgba(0,0,0,.18)"/>
-          <!-- wrist -->
-          <path d="M92,320 Q92,368 136,370 Q180,368 180,320 Z" fill="var(--gv-back)"/>
-          <path d="M92,320 Q136,312 180,320 L180,330 Q136,322 92,330 Z" fill="var(--gv-binding)"/>
-          <!-- palm body -->
-          <path d="M44,245 C40,182 52,144 78,122 C96,107 114,100 136,100 C158,100 176,107 194,122 C220,144 232,182 228,245 C225,300 192,328 136,330 C80,328 47,300 44,245 Z" fill="var(--gv-back)"/>
-          <!-- finger base connector -->
-          <path d="M72,138 Q100,114 136,110 Q172,114 200,138 L194,155 Q168,130 136,127 Q104,130 78,155 Z" fill="var(--gv-back)"/>
-          <!-- pinky -->
-          <path d="M72,158 C70,128 67,98 65,70 C63,52 63,38 68,26 C72,16 80,10 90,10 C100,10 107,16 111,26 C116,38 116,52 113,70 C110,98 106,128 104,158 Z" fill="var(--gv-back)"/>
-          <!-- ring -->
-          <path d="M108,150 C107,118 107,86 109,58 C110,40 113,25 118,15 C122,7 129,2 137,2 C145,2 152,7 156,15 C161,25 162,40 161,58 C160,86 156,118 152,150 Z" fill="var(--gv-back)"/>
-          <!-- middle -->
-          <path d="M147,146 C149,114 151,82 153,54 C155,36 157,20 162,10 C165,3 172,0 179,0 C186,0 192,4 196,11 C200,22 200,38 198,56 C195,84 190,115 188,147 Z" fill="var(--gv-back)"/>
-          <!-- index -->
-          <path d="M182,152 C187,120 193,88 199,60 C203,40 207,24 213,14 C217,6 224,2 231,3 C238,4 244,9 247,18 C251,30 249,48 244,68 C237,96 228,128 222,155 Z" fill="var(--gv-back)"/>
-          <!-- thumb -->
-          <path d="M222,205 C234,191 244,175 251,158 C257,144 259,129 255,117 C251,105 242,98 232,97 C222,96 213,103 208,116 C202,131 202,148 205,165 C208,180 214,196 222,205 Z" fill="var(--gv-back)" id="sv-thumb"/>
-          <!-- web I-type -->
-          <g id="web-i">
-            <path d="M218,158 C224,175 226,192 222,208 C228,202 234,186 238,166 Z" fill="var(--gv-web)"/>
-            <rect x="224" y="150" width="12" height="64" rx="6" fill="var(--gv-web)"/>
-            <rect x="216" y="174" width="28" height="10" rx="5" fill="var(--gv-web)"/>
-          </g>
-          <!-- web H-type (hidden by default) -->
-          <g id="web-h" style="display:none">
-            <rect x="218" y="150" width="12" height="64" rx="6" fill="var(--gv-web)"/>
-            <rect x="218" y="150" width="28" height="10" rx="5" transform="translate(-8,0)" fill="var(--gv-web)"/>
-            <rect x="218" y="190" width="28" height="10" rx="5" transform="translate(-8,0)" fill="var(--gv-web)"/>
-            <rect x="218" y="168" width="22" height="26" rx="3" transform="translate(-2,0)" fill="var(--gv-web)" opacity=".6"/>
-          </g>
-          <!-- web basket (hidden by default) -->
-          <g id="web-b" style="display:none">
-            <ellipse cx="230" cy="182" rx="14" ry="20" fill="var(--gv-web)"/>
-            <path d="M216,162 Q230,150 244,162 Q244,212 230,215 Q216,212 216,162 Z" fill="var(--gv-web)"/>
-            <line x1="216" y1="172" x2="244" y2="172" stroke="var(--gv-back)" stroke-width="2.5"/>
-            <line x1="216" y1="183" x2="244" y2="183" stroke="var(--gv-back)" stroke-width="2.5"/>
-            <line x1="216" y1="194" x2="244" y2="194" stroke="var(--gv-back)" stroke-width="2.5"/>
-            <line x1="224" y1="155" x2="224" y2="213" stroke="var(--gv-back)" stroke-width="2.5"/>
-            <line x1="235" y1="155" x2="235" y2="213" stroke="var(--gv-back)" stroke-width="2.5"/>
-          </g>
-          <!-- lacing between fingers -->
-          <path d="M107,108 L109,152" stroke="var(--gv-laces)" stroke-width="3.5" stroke-linecap="round" fill="none"/>
-          <circle cx="108" cy="118" r="4.5" fill="var(--gv-laces)"/>
-          <circle cx="108" cy="130" r="4.5" fill="var(--gv-laces)"/>
-          <circle cx="109" cy="143" r="4.5" fill="var(--gv-laces)"/>
-          <path d="M152,96 L150,150" stroke="var(--gv-laces)" stroke-width="3.5" stroke-linecap="round" fill="none"/>
-          <circle cx="151" cy="107" r="4.5" fill="var(--gv-laces)"/>
-          <circle cx="151" cy="119" r="4.5" fill="var(--gv-laces)"/>
-          <circle cx="150" cy="132" r="4.5" fill="var(--gv-laces)"/>
-          <circle cx="150" cy="144" r="4.5" fill="var(--gv-laces)"/>
-          <path d="M192,100 L188,154" stroke="var(--gv-laces)" stroke-width="3.5" stroke-linecap="round" fill="none"/>
-          <circle cx="191" cy="112" r="4.5" fill="var(--gv-laces)"/>
-          <circle cx="190" cy="124" r="4.5" fill="var(--gv-laces)"/>
-          <circle cx="189" cy="137" r="4.5" fill="var(--gv-laces)"/>
-          <circle cx="189" cy="149" r="4.5" fill="var(--gv-laces)"/>
-          <!-- binding at fingertips -->
-          <path d="M65,28 Q90,14 115,28" stroke="var(--gv-binding)" stroke-width="5" stroke-linecap="round" fill="none"/>
-          <path d="M110,14 Q137,2 163,14" stroke="var(--gv-binding)" stroke-width="5" stroke-linecap="round" fill="none"/>
-          <path d="M155,8 Q179,0 203,10" stroke="var(--gv-binding)" stroke-width="5" stroke-linecap="round" fill="none"/>
-          <path d="M200,10 Q231,4 248,20" stroke="var(--gv-binding)" stroke-width="5" stroke-linecap="round" fill="none"/>
-          <path d="M207,117 Q253,106 256,117" stroke="var(--gv-binding)" stroke-width="5" stroke-linecap="round" fill="none"/>
-          <!-- stitching on back -->
-          <path d="M66,222 Q136,240 206,222" stroke="var(--gv-stitching)" stroke-width="1.5" fill="none" stroke-dasharray="4,4" opacity=".75"/>
-          <path d="M70,262 Q136,278 202,262" stroke="var(--gv-stitching)" stroke-width="1.5" fill="none" stroke-dasharray="4,4" opacity=".75"/>
-          <path d="M73,300 Q136,314 199,300" stroke="var(--gv-stitching)" stroke-width="1.5" fill="none" stroke-dasharray="4,4" opacity=".75"/>
-          <!-- gloss -->
-          <path d="M44,245 C40,182 52,144 78,122 C96,107 114,100 136,100 C158,100 176,107 194,122 C220,144 232,182 228,245 C225,300 192,328 136,330 C80,328 47,300 44,245 Z" fill="url(#rgB)" pointer-events="none"/>
-          <path d="M72,158 C70,128 67,98 65,70 C63,52 63,38 68,26 C72,16 80,10 90,10 C100,10 107,16 111,26 C116,38 116,52 113,70 C110,98 106,128 104,158 Z" fill="url(#rgB)" pointer-events="none" opacity=".7"/>
-          <path d="M108,150 C107,118 107,86 109,58 C110,40 113,25 118,15 C122,7 129,2 137,2 C145,2 152,7 156,15 C161,25 162,40 161,58 C160,86 156,118 152,150 Z" fill="url(#rgB)" pointer-events="none" opacity=".7"/>
-          <path d="M147,146 C149,114 151,82 153,54 C155,36 157,20 162,10 C165,3 172,0 179,0 C186,0 192,4 196,11 C200,22 200,38 198,56 C195,84 190,115 188,147 Z" fill="url(#rgB)" pointer-events="none" opacity=".7"/>
-          <path d="M182,152 C187,120 193,88 199,60 C203,40 207,24 213,14 C217,6 224,2 231,3 C238,4 244,9 247,18 C251,30 249,48 244,68 C237,96 228,128 222,155 Z" fill="url(#rgB)" pointer-events="none" opacity=".7"/>
-          <path d="M222,205 C234,191 244,175 251,158 C257,144 259,129 255,117 C251,105 242,98 232,97 C222,96 213,103 208,116 C202,131 202,148 205,165 C208,180 214,196 222,205 Z" fill="url(#rgT)" pointer-events="none" opacity=".8"/>
-        </svg>
-      </div>
-      <!-- PALM VIEW -->
-      <div class="view-panel" id="vp-palm">
-        <svg viewBox="0 0 280 390" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <radialGradient id="rgP" cx="50%" cy="45%" r="55%"><stop offset="0%" stop-color="#fff" stop-opacity=".3"/><stop offset="100%" stop-color="#000" stop-opacity=".22"/></radialGradient>
-            <radialGradient id="rgPock" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#000" stop-opacity=".12"/><stop offset="100%" stop-color="#fff" stop-opacity="0"/></radialGradient>
-          </defs>
-          <ellipse cx="136" cy="382" rx="90" ry="8" fill="rgba(0,0,0,.18)"/>
-          <!-- wrist -->
-          <path d="M92,320 Q92,368 136,370 Q180,368 180,320 Z" fill="var(--gv-palm)"/>
-          <path d="M92,320 Q136,312 180,320 L180,330 Q136,322 92,330 Z" fill="var(--gv-binding)"/>
-          <!-- palm body (front side - slightly darker) -->
-          <path d="M44,245 C40,182 52,144 78,122 C96,107 114,100 136,100 C158,100 176,107 194,122 C220,144 232,182 228,245 C225,300 192,328 136,330 C80,328 47,300 44,245 Z" fill="var(--gv-palm)"/>
-          <!-- finger base connector -->
-          <path d="M72,138 Q100,114 136,110 Q172,114 200,138 L194,155 Q168,130 136,127 Q104,130 78,155 Z" fill="var(--gv-palm)"/>
-          <!-- finger tip tops (palm view shows underside of fingers) -->
-          <path d="M72,158 C70,128 67,98 65,70 C63,52 63,38 68,26 C72,16 80,10 90,10 C100,10 107,16 111,26 C116,38 116,52 113,70 C110,98 106,128 104,158 Z" fill="var(--gv-palm)"/>
-          <path d="M108,150 C107,118 107,86 109,58 C110,40 113,25 118,15 C122,7 129,2 137,2 C145,2 152,7 156,15 C161,25 162,40 161,58 C160,86 156,118 152,150 Z" fill="var(--gv-palm)"/>
-          <path d="M147,146 C149,114 151,82 153,54 C155,36 157,20 162,10 C165,3 172,0 179,0 C186,0 192,4 196,11 C200,22 200,38 198,56 C195,84 190,115 188,147 Z" fill="var(--gv-palm)"/>
-          <path d="M182,152 C187,120 193,88 199,60 C203,40 207,24 213,14 C217,6 224,2 231,3 C238,4 244,9 247,18 C251,30 249,48 244,68 C237,96 228,128 222,155 Z" fill="var(--gv-palm)"/>
-          <!-- thumb (palm side) -->
-          <path d="M222,205 C234,191 244,175 251,158 C257,144 259,129 255,117 C251,105 242,98 232,97 C222,96 213,103 208,116 C202,131 202,148 205,165 C208,180 214,196 222,205 Z" fill="var(--gv-palm)"/>
-          <!-- palm leather oval -->
-          <ellipse cx="130" cy="230" rx="72" ry="68" fill="var(--gv-palm)" opacity=".85"/>
-          <ellipse cx="130" cy="230" rx="72" ry="68" fill="url(#rgPock)"/>
-          <!-- pocket stitching -->
-          <ellipse cx="130" cy="230" rx="55" ry="52" fill="none" stroke="var(--gv-stitching)" stroke-width="1.5" stroke-dasharray="5,4" opacity=".8"/>
-          <ellipse cx="130" cy="230" rx="38" ry="36" fill="none" stroke="var(--gv-stitching)" stroke-width="1" stroke-dasharray="4,4" opacity=".6"/>
-          <!-- web (palm side) -->
-          <path d="M218,158 C224,175 226,192 222,208 C228,202 234,186 238,166 Z" fill="var(--gv-web)" opacity=".8"/>
-          <!-- binding -->
-          <path d="M65,28 Q90,14 115,28" stroke="var(--gv-binding)" stroke-width="5" stroke-linecap="round" fill="none"/>
-          <path d="M110,14 Q137,2 163,14" stroke="var(--gv-binding)" stroke-width="5" stroke-linecap="round" fill="none"/>
-          <path d="M155,8 Q179,0 203,10" stroke="var(--gv-binding)" stroke-width="5" stroke-linecap="round" fill="none"/>
-          <path d="M200,10 Q231,4 248,20" stroke="var(--gv-binding)" stroke-width="5" stroke-linecap="round" fill="none"/>
-          <!-- gloss -->
-          <path d="M44,245 C40,182 52,144 78,122 C96,107 114,100 136,100 C158,100 176,107 194,122 C220,144 232,182 228,245 C225,300 192,328 136,330 C80,328 47,300 44,245 Z" fill="url(#rgP)" pointer-events="none"/>
-        </svg>
-      </div>
-      <!-- SIDE VIEW -->
-      <div class="view-panel" id="vp-side">
-        <svg viewBox="0 0 280 390" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <radialGradient id="rgS" cx="35%" cy="30%" r="65%"><stop offset="0%" stop-color="#fff" stop-opacity=".2"/><stop offset="100%" stop-color="#000" stop-opacity=".2"/></radialGradient>
-          </defs>
-          <ellipse cx="136" cy="382" rx="70" ry="8" fill="rgba(0,0,0,.18)"/>
-          <!-- wrist side profile -->
-          <path d="M100,320 Q100,365 136,368 Q155,365 155,320 Z" fill="var(--gv-back)"/>
-          <path d="M100,320 Q136,314 155,320 L155,329 Q136,323 100,329 Z" fill="var(--gv-binding)"/>
-          <!-- glove body side profile (somewhat elliptical, thick) -->
-          <path d="M68,248 C64,185 72,148 90,126 C100,114 115,108 135,108 C155,108 166,120 168,140 C170,162 162,180 152,200 C145,215 140,240 140,265 C140,295 148,318 155,320 C128,324 95,308 78,288 C64,268 68,255 68,248 Z" fill="var(--gv-back)"/>
-          <!-- finger side silhouette -->
-          <path d="M90,125 Q100,105 106,80 Q110,60 110,40 Q110,18 118,10 Q126,4 134,6 Q142,8 144,18 Q146,30 142,55 Q138,80 134,105 Q132,120 130,130" fill="var(--gv-back)"/>
-          <!-- thumb side view -->
-          <path d="M148,148 C158,136 167,122 172,107 C176,96 175,84 169,76 C163,68 154,65 146,68 C138,71 133,80 132,92 C130,106 133,122 140,136 C144,144 148,148 148,148 Z" fill="var(--gv-back)" id="sv-thumb-s"/>
-          <!-- web side - main feature -->
-          <path d="M148,148 C152,160 156,175 155,192 C162,188 170,175 172,162 C174,148 170,136 166,128 Z" fill="var(--gv-web)"/>
-          <rect x="154" y="140" width="14" height="58" rx="7" fill="var(--gv-web)"/>
-          <rect x="148" y="162" width="26" height="10" rx="5" fill="var(--gv-web)"/>
-          <rect x="148" y="183" width="26" height="10" rx="5" fill="var(--gv-web)"/>
-          <!-- lacing on side -->
-          <path d="M80,165 L82,320" stroke="var(--gv-laces)" stroke-width="3" fill="none" opacity=".5" stroke-dasharray="6,8"/>
-          <path d="M80,245 C82,258 88,270 92,280" stroke="var(--gv-laces)" stroke-width="3" fill="none"/>
-          <!-- gloss overlay -->
-          <path d="M68,248 C64,185 72,148 90,126 C100,114 115,108 135,108 C155,108 166,120 168,140 C170,162 162,180 152,200 C145,215 140,240 140,265 C140,295 148,318 155,320 C128,324 95,308 78,288 C64,268 68,255 68,248 Z" fill="url(#rgS)" pointer-events="none"/>
-        </svg>
-      </div>
+      <canvas id="gcanvas"></canvas>
+      <!-- BACK VIEW PLACEHOLDER (kept for DOM reference only, hidden) -->
+      <div class="view-panel" id="vp-back" style="display:none">
     </div><!-- /gbox -->
     <div class="vbtns">
       <button class="vbtn on" onclick="setView('back')" data-k="vBack">背面</button>
@@ -384,47 +238,176 @@ const ST={
   colors:Object.fromEntries(ZONES.map(z=>[z.id,COLORS.find(c=>c.k===z.dk)]))
 };
 
+// ── THREE.JS 3D GLOVE ──────────────────────────────────────────────────
+const gcanvas=document.getElementById('gcanvas');
+const renderer=new THREE.WebGLRenderer({canvas:gcanvas,antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.outputEncoding=THREE.sRGBEncoding;
+renderer.toneMapping=THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure=1.15;
+const scene=new THREE.Scene();
+scene.background=new THREE.Color('#F8F3EC');
+const camera=new THREE.PerspectiveCamera(42,1,0.1,20);
+camera.position.set(0,0.1,-5.8);
+const controls=new THREE.OrbitControls(camera,gcanvas);
+controls.enableDamping=true;controls.dampingFactor=0.07;
+controls.minDistance=2.5;controls.maxDistance=9;
+controls.target.set(0,0.1,0.21);controls.update();
+scene.add(new THREE.AmbientLight(0xfff5e4,0.70));
+const kL=new THREE.DirectionalLight(0xfffde8,1.15);kL.position.set(-1.5,3.5,-4);scene.add(kL);
+const fL=new THREE.DirectionalLight(0xffe8cc,0.50);fL.position.set(1.5,2.0,4);scene.add(fL);
+const rL=new THREE.DirectionalLight(0xfff0e0,0.25);rL.position.set(3,0,0);scene.add(rL);
+
+const mats={
+  back:new THREE.MeshStandardMaterial({color:'#C19A6B',roughness:0.80,metalness:0.04}),
+  palm:new THREE.MeshStandardMaterial({color:'#C19A6B',roughness:0.75,metalness:0.04,side:THREE.FrontSide}),
+  web:new THREE.MeshStandardMaterial({color:'#5C3010',roughness:0.82,metalness:0.02,side:THREE.DoubleSide}),
+  laces:new THREE.MeshStandardMaterial({color:'#C19A6B',roughness:0.68,metalness:0.06}),
+  binding:new THREE.MeshStandardMaterial({color:'#D4A017',roughness:0.62,metalness:0.08}),
+  stitching:new THREE.MeshStandardMaterial({color:'#8B6914',roughness:0.88,metalness:0.01}),
+};
+
+const DEPTH=0.42;
+const glove=new THREE.Group();
+glove.position.set(0.1,0,0);
+scene.add(glove);
+
+// 2D glove silhouette: back view, right-hand glove (thumb right, pinky left)
+const shape=new THREE.Shape();
+shape.moveTo(-0.63,-2.02);
+shape.bezierCurveTo(-1.30,-1.30,-1.52,-0.55,-1.35,0.58);
+shape.bezierCurveTo(-1.26,1.08,-1.28,1.60,-1.40,1.92);
+shape.quadraticCurveTo(-1.46,2.28,-1.28,2.46);
+shape.quadraticCurveTo(-1.08,2.60,-0.88,2.46);
+shape.quadraticCurveTo(-0.70,2.28,-0.72,2.02);
+shape.bezierCurveTo(-0.74,1.90,-0.70,1.82,-0.64,1.84);
+shape.bezierCurveTo(-0.58,1.86,-0.56,1.92,-0.58,2.04);
+shape.bezierCurveTo(-0.60,2.20,-0.58,2.40,-0.52,2.58);
+shape.quadraticCurveTo(-0.38,2.72,-0.22,2.64);
+shape.quadraticCurveTo(-0.08,2.50,-0.10,2.30);
+shape.bezierCurveTo(-0.12,2.08,-0.14,1.88,-0.14,1.76);
+shape.bezierCurveTo(-0.10,1.66,-0.04,1.62,0.00,1.66);
+shape.bezierCurveTo(0.04,1.70,0.04,1.78,0.02,1.90);
+shape.bezierCurveTo(0.02,2.12,0.06,2.40,0.12,2.62);
+shape.quadraticCurveTo(0.24,2.80,0.38,2.72);
+shape.quadraticCurveTo(0.50,2.60,0.48,2.40);
+shape.bezierCurveTo(0.46,2.14,0.44,1.90,0.42,1.76);
+shape.bezierCurveTo(0.46,1.64,0.52,1.60,0.56,1.64);
+shape.bezierCurveTo(0.60,1.68,0.60,1.78,0.58,1.90);
+shape.bezierCurveTo(0.58,2.12,0.62,2.36,0.70,2.56);
+shape.quadraticCurveTo(0.82,2.70,0.98,2.62);
+shape.quadraticCurveTo(1.10,2.48,1.06,2.26);
+shape.bezierCurveTo(1.02,2.02,0.98,1.80,0.94,1.64);
+shape.bezierCurveTo(0.90,1.46,1.06,1.22,1.22,1.08);
+shape.bezierCurveTo(1.56,0.80,1.82,0.52,1.86,0.22);
+shape.quadraticCurveTo(1.92,-0.05,1.78,-0.26);
+shape.bezierCurveTo(1.64,-0.44,1.36,-0.50,1.16,-0.32);
+shape.bezierCurveTo(1.00,-0.16,1.04,-0.92,0.90,-1.52);
+shape.bezierCurveTo(0.76,-1.87,0.64,-2.02,0.63,-2.02);
+shape.quadraticCurveTo(0.0,-2.22,-0.63,-2.02);
+
+glove.add(new THREE.Mesh(new THREE.ExtrudeGeometry(shape,{
+  depth:DEPTH,bevelEnabled:true,bevelThickness:0.055,bevelSize:0.044,bevelSegments:5,curveSegments:48
+}),mats.back));
+
+// Palm leather oval on front face
+const palmOval=new THREE.Shape();
+palmOval.absellipse(-0.06,-0.28,0.84,0.78,0,Math.PI*2,false,0);
+const palmMesh=new THREE.Mesh(new THREE.ShapeGeometry(palmOval,48),mats.palm);
+palmMesh.position.z=DEPTH+0.01;
+glove.add(palmMesh);
+
+// Web group
+const webGroup=new THREE.Group();
+glove.add(webGroup);
+
+function addWebBar(x1,y1,x2,y2,z){
+  const dx=x2-x1,dy=y2-y1,len=Math.sqrt(dx*dx+dy*dy),hw=0.055;
+  const nx=(-dy/len)*hw,ny=(dx/len)*hw;
+  const s=new THREE.Shape();
+  s.moveTo(x1+nx,y1+ny);s.lineTo(x2+nx,y2+ny);s.lineTo(x2-nx,y2-ny);s.lineTo(x1-nx,y1-ny);s.closePath();
+  const m=new THREE.Mesh(new THREE.ShapeGeometry(s,4),mats.web);
+  m.position.z=z;webGroup.add(m);
+}
+
+function updateWeb(){
+  while(webGroup.children.length)webGroup.remove(webGroup.children[0]);
+  const W=-0.01;
+  if(ST.web==='i-web'||ST.web==='single-post'){
+    addWebBar(1.02,0.98,1.08,-0.12,W);
+    addWebBar(0.88,0.52,1.40,0.38,W);
+  }else if(ST.web==='h-web'){
+    addWebBar(0.98,0.98,1.04,-0.12,W);
+    addWebBar(1.14,0.98,1.20,-0.12,W);
+    addWebBar(0.86,0.50,1.38,0.40,W);
+  }else{
+    const bs=new THREE.Shape();
+    bs.moveTo(0.90,1.02);bs.bezierCurveTo(1.12,1.06,1.44,0.82,1.46,0.48);
+    bs.bezierCurveTo(1.48,0.14,1.36,-0.06,1.14,-0.20);
+    bs.lineTo(1.00,-0.24);bs.bezierCurveTo(0.86,-0.02,0.82,0.30,0.80,0.56);
+    bs.bezierCurveTo(0.78,0.82,0.78,0.98,0.90,1.02);
+    const bm=new THREE.Mesh(new THREE.ShapeGeometry(bs,32),mats.web);
+    bm.position.z=W;webGroup.add(bm);
+  }
+}
+window.updateWeb=updateWeb;
+
+// Binding tubes at fingertips
+function addTube(pts,mat){
+  const curve=new THREE.CatmullRomCurve3(pts.map(p=>new THREE.Vector3(p[0],p[1],p[2])));
+  glove.add(new THREE.Mesh(new THREE.TubeGeometry(curve,pts.length*2,0.036,6,false),mat));
+}
+addTube([[-1.44,2.20,-0.02],[-1.28,2.46,-0.02],[-1.08,2.60,-0.02],[-0.88,2.46,-0.02],[-0.70,2.28,-0.02]],mats.binding);
+addTube([[-0.62,2.04,-0.02],[-0.52,2.58,-0.02],[-0.38,2.72,-0.02],[-0.22,2.64,-0.02],[-0.10,2.30,-0.02]],mats.binding);
+addTube([[-0.14,1.76,-0.02],[0.12,2.62,-0.02],[0.24,2.80,-0.02],[0.38,2.72,-0.02],[0.48,2.40,-0.02]],mats.binding);
+addTube([[0.42,1.76,-0.02],[0.70,2.56,-0.02],[0.82,2.70,-0.02],[0.98,2.62,-0.02],[1.06,2.26,-0.02]],mats.binding);
+addTube([[1.22,1.08,-0.02],[1.52,0.76,-0.02],[1.82,0.48,-0.02],[1.90,0.14,-0.02]],mats.binding);
+
+// Lace dots between fingers
+[[-0.64,1.96],[-0.64,1.84],[0.00,1.94],[0.00,1.84],[0.54,1.92],[0.54,1.82]].forEach(([x,y])=>{
+  const m=new THREE.Mesh(new THREE.SphereGeometry(0.046,8,6),mats.laces);
+  m.position.set(x,y,-0.05);glove.add(m);
+});
+
+// Resize canvas
+function onResize(){
+  const w=gcanvas.parentElement.clientWidth,h=gcanvas.parentElement.clientHeight;
+  renderer.setSize(w,h);camera.aspect=w/h;camera.updateProjectionMatrix();
+}
+window.addEventListener('resize',onResize);onResize();
+
+// Render loop
+(function loop(){requestAnimationFrame(loop);controls.update();renderer.render(scene,camera);})();
+
+// ── UI FUNCTIONS ─────────────────────────────────────────────────────────
 function setView(v){
   document.querySelectorAll('.vbtn').forEach(b=>b.classList.remove('on'));
   event.target.classList.add('on');
-  document.querySelectorAll('.view-panel').forEach(p=>p.classList.remove('on'));
-  document.getElementById('vp-'+v).classList.add('on');
+  const vp={back:[0,0.1,-5.8,0,0.1,0.21],palm:[0,0.1,6.0,0,0.1,0.21],side:[4.3,0.1,0.21,0,0.1,0.21]}[v]||[0,0.1,-5.8,0,0.1,0.21];
+  camera.position.set(vp[0],vp[1],vp[2]);controls.target.set(vp[3],vp[4],vp[5]);controls.update();
 }
 window.setView=setView;
-
-function updateWeb(){
-  ['i','h','b'].forEach(t=>{
-    const el=document.getElementById('web-'+t);
-    if(el) el.style.display='none';
-  });
-  const wmap={'i-web':'i','h-web':'h','basket':'b'};
-  const el=document.getElementById('web-'+(wmap[ST.web]||'i'));
-  if(el) el.style.display='';
-}
 
 function pickColor(zid,ck){
   const color=COLORS.find(c=>c.k===ck);
   ST.colors[zid]=color;
-  document.documentElement.style.setProperty(CSS_MAP[zid],color.h);
+  if(mats[zid])mats[zid].color.set(color.h);
   document.querySelectorAll(`.sw-wrap[data-z="${zid}"]`).forEach(s=>s.classList.toggle('on',s.dataset.k===ck));
-  const cp=document.getElementById('cp-'+zid); if(cp)cp.style.background=color.h;
-  const cn=document.getElementById('cn-'+zid); if(cn)cn.textContent=color.n;
+  const cp=document.getElementById('cp-'+zid);if(cp)cp.style.background=color.h;
+  const cn=document.getElementById('cn-'+zid);if(cn)cn.textContent=color.n;
   if(zid==='back'){
-    document.documentElement.style.setProperty('--gv-laces',color.h);
+    if(mats.laces)mats.laces.color.set(color.h);
     ST.colors.laces=color;
     document.querySelectorAll(`.sw-wrap[data-z="laces"]`).forEach(s=>s.classList.toggle('on',s.dataset.k===ck));
-    const cp2=document.getElementById('cp-laces'); if(cp2)cp2.style.background=color.h;
-    const cn2=document.getElementById('cn-laces'); if(cn2)cn2.textContent=color.n;
+    const cp2=document.getElementById('cp-laces');if(cp2)cp2.style.background=color.h;
+    const cn2=document.getElementById('cn-laces');if(cn2)cn2.textContent=color.n;
   }
   updateSummary();
 }
 window.pickColor=pickColor;
 
 document.querySelectorAll('input[name="hand"]').forEach(r=>r.addEventListener('change',()=>{
-  ST.hand=r.value;
-  const svg=document.getElementById('glove-back');
-  if(svg) svg.style.transform=r.value==='left'?'scaleX(-1)':'';
-  updateSummary();
+  ST.hand=r.value;glove.scale.x=r.value==='left'?-1:1;updateSummary();
 }));
 document.querySelectorAll('input[name="size"]').forEach(r=>r.addEventListener('change',()=>{ST.size=r.value;updateSummary();}));
 document.querySelectorAll('input[name="web"]').forEach(r=>r.addEventListener('change',()=>{ST.web=r.value;updateWeb();updateSummary();}));
@@ -438,7 +421,7 @@ function setLang(l){
   document.getElementById('bsub').childNodes[0].textContent=t.step1?t.back:'手套客製化';
   document.querySelectorAll('[data-k]').forEach(el=>{const v=t[el.dataset.k];if(v)el.textContent=v;});
   document.querySelectorAll('[data-wk]').forEach(el=>{const v=t.ws[el.dataset.wk];if(v)el.textContent=v;});
-  buildZones(); updateSummary();
+  buildZones();updateSummary();
 }
 window.setLang=setLang;
 
@@ -449,7 +432,7 @@ function go(n){
     if(i+1<n)t.classList.add('done');
     if(i+1===n)t.classList.add('on');
   });
-  const el=document.getElementById('s'+n); if(el)el.classList.add('on');
+  const el=document.getElementById('s'+n);if(el)el.classList.add('on');
   updateSummary();
 }
 window.go=go;
@@ -457,10 +440,10 @@ window.go=go;
 function buildZones(){
   const t=T[lang];
   const zl={back:t.back,palm:t.palm,web:t.web,laces:t.laces,binding:t.binding,stitching:t.stitching};
-  const c=document.getElementById('czones'); c.innerHTML='';
+  const c=document.getElementById('czones');c.innerHTML='';
   ZONES.forEach(z=>{
     const sel=ST.colors[z.id];
-    const d=document.createElement('div'); d.className='czone';
+    const d=document.createElement('div');d.className='czone';
     d.innerHTML=`<div class="czone-hdr"><div class="cprev" id="cp-${z.id}" style="background:${sel.h}"></div><span class="czone-name">${zl[z.id]}</span><span class="cname-cur" id="cn-${z.id}">${sel.n}</span></div><div class="swatches">${COLORS.map(c=>`<div class="sw-wrap${c.k===sel.k?' on':''}" data-z="${z.id}" data-k="${c.k}" onclick="pickColor('${z.id}','${c.k}')"><div class="sw" style="background:${c.h}" title="${c.n}"></div><span class="sw-lbl">${c.n}</span></div>`).join('')}</div>`;
     c.appendChild(d);
   });
@@ -485,7 +468,7 @@ async function doSubmit(){
   if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){errEl.style.display='block';return;}
   errEl.style.display='none';
   const btn=document.getElementById('submitBtn');
-  btn.disabled=true; btn.textContent=t.submitting;
+  btn.disabled=true;btn.textContent=t.submitting;
   const payload={hand:ST.hand,size:ST.size,web:ST.web,stiffness:ST.stiff,
     colors:Object.fromEntries(Object.entries(ST.colors).map(([k,v])=>[k,v.n])),
     thumbText:document.getElementById('thumbTxt').value,pinkyText:document.getElementById('pinkyTxt').value,
@@ -496,14 +479,14 @@ async function doSubmit(){
     const res=await fetch('https://anan53.onrender.com/order',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
     if(!res.ok)throw new Error();
     document.querySelectorAll('.sc').forEach(el=>el.style.display='none');
-    const sc=document.getElementById('succScreen'); sc.style.display='block';
+    const sc=document.getElementById('succScreen');sc.style.display='block';
     sc.querySelector('[data-k="succTitle"]').textContent=t.succTitle;
     sc.querySelector('[data-k="succMsg"]').textContent=t.succMsg;
   }catch(e){btn.disabled=false;btn.textContent=t.submit;alert('送出失敗，請稍後再試。');}
 }
 window.doSubmit=doSubmit;
 
-buildZones(); updateSummary(); updateWeb();
+buildZones();updateSummary();updateWeb();
 </script>
 </body>
 </html>
