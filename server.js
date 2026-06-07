@@ -505,7 +505,7 @@ app.listen(PORT, () => {
 
   // Gmail 輪詢（每 5 分鐘）
   if (process.env.GOOGLE_REFRESH_TOKEN) {
-    setTimeout(checkGmail, 60000); // 啟動 1 分鐘後開始
+    setTimeout(checkGmail, 60000);
     setInterval(checkGmail, 5 * 60 * 1000);
     console.log('Gmail 輪詢已啟動');
   }
@@ -513,4 +513,13 @@ app.listen(PORT, () => {
   // 早安報告排程
   scheduleMorningReport();
   console.log('早安報告排程已啟動');
+
+  // 防止 Render 免費版休眠（每 10 分鐘自 ping）
+  const selfUrl = process.env.RENDER_EXTERNAL_URL;
+  if (selfUrl) {
+    setInterval(() => {
+      fetch(selfUrl).catch(() => {});
+    }, 10 * 60 * 1000);
+    console.log('防休眠 ping 已啟動');
+  }
 });

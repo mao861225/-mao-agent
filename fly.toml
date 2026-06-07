@@ -1,3 +1,6 @@
+app = "mao-agent-tw"
+primary_region = "nrt"
+
 [build]
 
 [env]
@@ -19,6 +22,13 @@
     type = "connections"
     hard_limit = 25
     soft_limit = 20
+
+  [[services.http_checks]]
+    interval = "30s"
+    timeout = "5s"
+    grace_period = "10s"
+    method = "GET"
+    path = "/"
 
 [[vm]]
   size = "shared-cpu-1x"
