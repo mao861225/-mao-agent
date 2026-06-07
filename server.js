@@ -496,6 +496,7 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res)
   }
 });
 
+app.use(express.static(__dirname));
 app.get('/', (req, res) => res.send('Mao Agent 運作中'));
 
 // ─── 手套訂單 ─────────────────────────────────────────────────
