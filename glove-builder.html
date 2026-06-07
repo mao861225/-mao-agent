@@ -97,14 +97,16 @@ body{background:var(--bg);color:var(--text);font-family:'Montserrat',sans-serif;
 .glove-stage{background:#F8F3EC;border:1px solid var(--border);border-radius:8px;padding:20px;width:100%;max-width:360px;display:flex;justify-content:center}
 .glove-stage svg{width:100%;max-width:300px;height:auto}
 
-/* SVG zone fills (updated via CSS custom properties) */
+/* SVG zone fills */
 .gz-back{fill:var(--gv-back)}
 .gz-web{fill:var(--gv-web)}
 .gz-palm{fill:var(--gv-palm)}
 .gz-laces{fill:var(--gv-laces)}
-.gz-binding{fill:none;stroke:var(--gv-binding);stroke-linecap:round;stroke-linejoin:round;stroke-width:5.5}
-.gz-stitch{fill:none;stroke:var(--gv-stitching);stroke-width:1.5;stroke-dasharray:5,4;opacity:.75}
-.gz-line{fill:none;stroke:rgba(0,0,0,.13);stroke-width:1.2;stroke-linejoin:round}
+/* binding edge strip on each piece */
+.gz-bd{stroke:var(--gv-binding);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.gz-stitch{fill:none;stroke:var(--gv-stitching);stroke-width:1.5;stroke-dasharray:5,4;opacity:.72}
+.gz-sep{fill:none;stroke:rgba(0,0,0,.16);stroke-width:1}
+.gz-line{fill:none;stroke:rgba(0,0,0,.12);stroke-width:1;stroke-linejoin:round}
 
 /* Summary card */
 .scard{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px;width:100%;max-width:360px}
@@ -293,95 +295,87 @@ body{background:var(--bg);color:var(--text);font-family:'Montserrat',sans-serif;
     <div class="pv-label">即時預覽</div>
 
     <div class="glove-stage">
-      <svg id="gloveSvg" viewBox="0 0 300 410" xmlns="http://www.w3.org/2000/svg">
+      <!--
+        Baseball glove — back/shell view (右投左戴)
+        ViewBox 300×420, fingers point up, thumb to lower-right.
+        Zones: gz-back (shell), gz-web (web pocket), gz-laces, gz-stitch
+        Binding edge: gz-bd adds thin stroke in --gv-binding color to any element.
+      -->
+      <svg id="gloveSvg" viewBox="0 0 300 420" xmlns="http://www.w3.org/2000/svg">
         <defs>
-          <filter id="gf-sh" x="-20%" y="-8%" width="140%" height="125%">
-            <feDropShadow dx="2" dy="5" stdDeviation="5" flood-color="#00000025"/>
+          <filter id="gf-sh" x="-22%" y="-10%" width="150%" height="135%">
+            <feDropShadow dx="3" dy="7" stdDeviation="7" flood-color="#00000030"/>
           </filter>
         </defs>
 
         <!-- Ground shadow -->
-        <ellipse cx="148" cy="404" rx="80" ry="7" fill="#00000018"/>
+        <ellipse cx="138" cy="414" rx="88" ry="6" fill="#00000018"/>
 
-        <!-- BACK LEATHER + FINGERS (one path) -->
-        <path class="gz-back" filter="url(#gf-sh)" d="
-          M 92,380
-          Q 148,392 206,380
-          Q 222,374 230,358
-          Q 238,338 236,310
-          Q 234,286 228,262
-          Q 222,240 218,220
-          Q 214,205 216,194
-          L 198,178
-          L 198,22 A 10,10 0 0,1 178,22 L 178,178
-          Q 167,170 155,166
-          L 155,10 A 11,11 0 0,1 133,10 L 133,166
-          Q 122,173 109,178
-          L 109,22 A 10,10 0 0,1 89,22 L 89,178
-          Q 79,185 67,194
-          L 67,52 A 9,9 0 0,1 49,52 L 49,194
-          Q 40,212 36,242
-          Q 32,270 36,300
-          Q 40,328 54,350
-          Q 70,370 92,380 Z
-        "/>
+        <!-- ══ PALM BODY ══ -->
+        <path class="gz-back gz-bd" filter="url(#gf-sh)"
+          d="M 42,192
+             Q 32,198 24,224
+             Q 16,254 16,290
+             Q 16,328 26,358
+             Q 38,384 62,398
+             Q 92,412 130,414
+             Q 168,412 196,398
+             Q 220,384 232,358
+             Q 242,326 240,288
+             Q 238,250 226,222
+             Q 217,200 212,192 Z"/>
 
-        <!-- THUMB -->
-        <rect class="gz-back" x="210" y="190" width="24" height="110" rx="12"
-              transform="rotate(24,222,194)" filter="url(#gf-sh)"/>
+        <!-- ══ FINGER STALLS (overlap into palm ~20px) ══ -->
+        <!-- Pinky  — width 26, tips at y=60, base extends to y=212 -->
+        <rect class="gz-back gz-bd" x="45" y="60" width="26" height="152" rx="13"/>
+        <!-- Ring   — width 30 -->
+        <rect class="gz-back gz-bd" x="79" y="40" width="30" height="172" rx="15"/>
+        <!-- Middle — width 32, tallest -->
+        <rect class="gz-back gz-bd" x="117" y="20" width="32" height="192" rx="16"/>
+        <!-- Index  — width 30 -->
+        <rect class="gz-back gz-bd" x="157" y="40" width="30" height="172" rx="15"/>
 
-        <!-- WEB -->
-        <path class="gz-web" id="svgWeb" d="
-          M 198,178 Q 214,170 222,182
-          Q 236,200 234,228
-          Q 230,252 218,260
-          Q 206,266 198,252
-          Q 188,236 192,210
-          Q 194,190 198,178 Z
-        "/>
+        <!-- ══ THUMB (rotated ~24° from vertical toward lower-right) ══ -->
+        <rect class="gz-back gz-bd" x="214" y="190" width="24" height="116" rx="12"
+              transform="rotate(24,226,192)"/>
 
-        <!-- BINDING strokes -->
-        <!-- index finger -->
-        <path class="gz-binding" d="M 198,178 L 198,22 A 10,10 0 0,1 178,22 L 178,178"/>
-        <!-- middle finger -->
-        <path class="gz-binding" d="M 155,166 L 155,10 A 11,11 0 0,1 133,10 L 133,166"/>
-        <!-- ring finger -->
-        <path class="gz-binding" d="M 109,178 L 109,22 A 10,10 0 0,1 89,22 L 89,178"/>
-        <!-- pinky finger -->
-        <path class="gz-binding" d="M 67,194 L 67,52 A 9,9 0 0,1 49,52 L 49,194"/>
-        <!-- thumb -->
-        <rect class="gz-binding" x="210" y="190" width="24" height="110" rx="12"
-              transform="rotate(24,222,194)"/>
-        <!-- web outline -->
-        <path class="gz-binding" d="M 198,178 Q 214,170 222,182 Q 236,200 234,228 Q 230,252 218,260 Q 206,266 198,252 Q 188,236 192,210 Q 194,190 198,178 Z" style="stroke-width:4.5"/>
-        <!-- palm perimeter right side -->
-        <path class="gz-binding" d="M 216,194 Q 222,208 228,232 Q 234,258 236,282 Q 238,310 230,336 Q 222,358 206,374 Q 148,390 92,380 Q 70,372 56,352 Q 40,330 36,300 Q 32,270 36,242 Q 40,218 49,196"/>
+        <!-- ══ WEB POCKET (thumb–index junction) ══ -->
+        <path class="gz-web gz-bd" id="svgWeb"
+          d="M 187,198
+             Q 202,190 220,200
+             Q 236,214 233,246
+             Q 230,268 217,276
+             Q 203,282 192,268
+             Q 180,252 182,224
+             Q 183,208 187,198 Z"/>
 
-        <!-- LACE DOTS (finger gaps + web) -->
-        <circle class="gz-laces" cx="78" cy="118" r="5.5"/>
-        <circle class="gz-laces" cx="78" cy="150" r="5.5"/>
-        <circle class="gz-laces" cx="122" cy="106" r="5.5"/>
-        <circle class="gz-laces" cx="122" cy="138" r="5.5"/>
-        <circle class="gz-laces" cx="166" cy="110" r="5.5"/>
-        <circle class="gz-laces" cx="166" cy="142" r="5.5"/>
-        <circle class="gz-laces" cx="210" cy="212" r="5"/>
-        <circle class="gz-laces" cx="216" cy="238" r="5"/>
+        <!-- ══ LACE DOTS ══ -->
+        <!-- Pinky-Ring gap -->
+        <circle class="gz-laces" cx="75" cy="108" r="5"/>
+        <circle class="gz-laces" cx="75" cy="136" r="5"/>
+        <!-- Ring-Middle gap -->
+        <circle class="gz-laces" cx="113" cy="88" r="5"/>
+        <circle class="gz-laces" cx="113" cy="116" r="5"/>
+        <!-- Middle-Index gap -->
+        <circle class="gz-laces" cx="153" cy="92" r="5"/>
+        <circle class="gz-laces" cx="153" cy="120" r="5"/>
+        <!-- Web laces -->
+        <circle class="gz-laces" cx="208" cy="222" r="4.5"/>
+        <circle class="gz-laces" cx="215" cy="248" r="4.5"/>
 
-        <!-- STITCHING lines on back -->
-        <path class="gz-stitch" d="M 68,252 Q 148,256 210,246"/>
-        <path class="gz-stitch" d="M 63,278 Q 148,282 216,272"/>
-        <path class="gz-stitch" d="M 60,304 Q 148,308 220,298"/>
+        <!-- ══ BACK STITCHING ══ -->
+        <path class="gz-stitch" d="M 54,254 Q 128,258 202,248"/>
+        <path class="gz-stitch" d="M 50,284 Q 128,288 206,278"/>
+        <path class="gz-stitch" d="M 48,314 Q 128,318 208,308"/>
 
-        <!-- ZONE OUTLINES (thin definition lines) -->
-        <path class="gz-line" d="
-          M 92,380 Q 148,392 206,380 Q 222,374 230,358 Q 238,338 236,310
-          Q 234,286 228,262 Q 222,240 218,220 Q 214,205 216,194
-          L 198,178 L 198,22 A 10,10 0 0,1 178,22 L 178,178
-          Q 167,170 155,166 L 155,10 A 11,11 0 0,1 133,10 L 133,166
-          Q 122,173 109,178 L 109,22 A 10,10 0 0,1 89,22 L 89,178
-          Q 79,185 67,194 L 67,52 A 9,9 0 0,1 49,52 L 49,194
-          Q 40,212 36,242 Q 32,270 36,300 Q 40,328 54,350 Q 70,370 92,380 Z
-        "/>
+        <!-- ══ FINGER-GAP LINES (show lace channel between stalls) ══ -->
+        <line class="gz-sep" x1="71" y1="196" x2="71" y2="216"/>
+        <line class="gz-sep" x1="79" y1="196" x2="79" y2="216"/>
+        <line class="gz-sep" x1="109" y1="196" x2="109" y2="216"/>
+        <line class="gz-sep" x1="117" y1="196" x2="117" y2="216"/>
+        <line class="gz-sep" x1="149" y1="196" x2="149" y2="216"/>
+        <line class="gz-sep" x1="157" y1="196" x2="157" y2="216"/>
+
       </svg>
     </div>
 
@@ -494,12 +488,13 @@ function setHand(v){
 }
 window.setHand=setHand;
 
-/* Web style paths */
+/* Web style paths — all share same outer shape, zone fill changes */
+const WEB_BASE='M 187,198 Q 202,190 220,200 Q 236,214 233,246 Q 230,268 217,276 Q 203,282 192,268 Q 180,252 182,224 Q 183,208 187,198 Z';
 const WEB_PATHS={
-  'i-web':  'M 198,178 Q 214,170 222,182 Q 236,200 234,228 Q 230,252 218,260 Q 206,266 198,252 Q 188,236 192,210 Q 194,190 198,178 Z',
-  'h-web':  'M 198,178 Q 214,170 224,184 Q 240,204 238,232 Q 234,256 220,264 Q 206,270 196,254 Q 184,238 188,210 Q 192,188 198,178 Z',
-  'basket': 'M 196,174 Q 216,164 228,180 Q 246,202 244,234 Q 240,260 224,270 Q 208,278 196,262 Q 182,244 184,214 Q 187,190 196,174 Z',
-  'single-post':'M 200,180 Q 210,176 216,188 Q 224,206 222,232 Q 218,250 210,256 Q 202,260 198,248 Q 190,232 194,210 Q 196,192 200,180 Z',
+  'i-web':      WEB_BASE,
+  'h-web':      WEB_BASE,
+  'basket':     WEB_BASE,
+  'single-post':WEB_BASE,
 };
 function setWeb(v,label){
   ST.web=v;
