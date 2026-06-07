@@ -498,6 +498,69 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res)
 
 app.get('/', (req, res) => res.send('Mao Agent 運作中'));
 
+// ─── 手套訂單 ─────────────────────────────────────────────────
+
+async function sendEmail(to, subject, body) {
+  const msg = [
+    `To: ${to}`,
+    `From: 阿男伍叁 <m10790205@gmail.com>`,
+    'Content-Type: text/plain; charset=UTF-8',
+    'MIME-Version: 1.0',
+    `Subject: =?UTF-8?B?${Buffer.from(subject).toString('base64')}?=`,
+    '',
+    body
+  ].join('\r\n');
+  const encoded = Buffer.from(msg).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  await gmail.users.messages.send({ userId: 'me', requestBody: { raw: encoded } });
+}
+
+app.post('/order', express.json(), async (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  const o = req.body;
+  const today = new Date().toLocaleString('zh-TW', { timeZone: 'Asia/Taipei' });
+  const colorLines = Object.entries(o.colors || {}).map(([k, v]) => `  ${k}：${v}`).join('\n');
+
+  const detail = `【阿男伍叁 手套客製訂單】
+日期：${today}
+
+▍基本配置
+慣用手：${o.hand === 'right' ? '右投（戴左手）' : '左投（戴右手）'}
+尺寸：${o.size}"
+網型：${o.web}
+硬度：${o.stiffness}
+
+▍顏色配置
+${colorLines}
+
+▍個人化刺繡
+拇指：${o.thumbText || '無'}
+尾指：${o.pinkyText || '無'}
+掌心：${o.palmText || '無'}
+腕帶：${o.wristText || '無'}
+特殊需求：${o.specialNotes || '無'}
+
+▍客戶資訊
+姓名：${o.customerName}
+Email：${o.customerEmail}
+電話：${o.customerPhone || '未提供'}`;
+
+  try {
+    await sendEmail('ananfitythree@gmail.com', `【手套訂單】${o.customerName}`, detail);
+    await sendEmail(o.customerEmail, '【阿男伍叁】客製手套訂單確認',
+      `您好 ${o.customerName}，\n\n感謝訂購阿男伍叁客製手套！我們已收到您的配置，將在 2 個工作天內聯繫確認報價。\n\n${detail}\n\n阿男伍叁 敬上`);
+    res.json({ success: true });
+  } catch (err) {
+    console.error('訂單 email 失敗:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.options('/order', (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.sendStatus(204);
+});
+
 // ─── 啟動 ─────────────────────────────────────────────────────
 
 app.listen(PORT, () => {
