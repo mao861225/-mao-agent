@@ -31,6 +31,10 @@ app.get('/', (req, res) => {
   res.redirect('/builder/baseball');
 });
 
+app.get('/glove.glb', (req, res) => {
+  res.sendFile(path.join(__dirname, 'glove.glb'));
+});
+
 async function sendEmail(to, subject, body) {
   const msg = [
     `To: ${to}`,

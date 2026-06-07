@@ -97,6 +97,7 @@ textarea.inp{height:90px;resize:vertical}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 </head>
 <body>
 <header class="hdr">
@@ -248,11 +249,11 @@ renderer.toneMappingExposure=1.15;
 const scene=new THREE.Scene();
 scene.background=new THREE.Color('#F8F3EC');
 const camera=new THREE.PerspectiveCamera(42,1,0.1,20);
-camera.position.set(0,0.5,-6.5);
+camera.position.set(0,0.5,6.8);
 const controls=new THREE.OrbitControls(camera,gcanvas);
 controls.enableDamping=true;controls.dampingFactor=0.07;
 controls.minDistance=2.5;controls.maxDistance=11;
-controls.target.set(0,0.4,0.21);controls.update();
+controls.target.set(0,0.4,0);controls.update();
 scene.add(new THREE.AmbientLight(0xfff5e4,0.70));
 const kL=new THREE.DirectionalLight(0xfffde8,1.15);kL.position.set(-1.5,3.5,-4);scene.add(kL);
 const fL=new THREE.DirectionalLight(0xffe8cc,0.50);fL.position.set(1.5,2.0,4);scene.add(fL);
@@ -267,98 +268,17 @@ const mats={
   stitching:new THREE.MeshStandardMaterial({color:'#8B6914',roughness:0.88,metalness:0.01}),
 };
 
-const DEPTH=0.40;
 const glove=new THREE.Group();
 scene.add(glove);
 
-// ── PALM BODY (elliptical extrusion) ──────────────────────────────────
-const palmShape=new THREE.Shape();
-palmShape.absellipse(0,-0.45,1.00,1.52,0,Math.PI*2,false,0);
-glove.add(new THREE.Mesh(new THREE.ExtrudeGeometry(palmShape,{
-  depth:DEPTH,bevelEnabled:true,bevelThickness:0.06,bevelSize:0.05,bevelSegments:4,curveSegments:32
-}),mats.back));
-
-// ── WRIST (below palm) ────────────────────────────────────────────────
-const wristShape=new THREE.Shape();
-wristShape.absellipse(0,0,0.56,0.26,0,Math.PI*2,false,0);
-const wristM=new THREE.Mesh(new THREE.ExtrudeGeometry(wristShape,{depth:DEPTH,bevelEnabled:false,curveSegments:16}),mats.back);
-wristM.position.set(0,-2.10,0);
-glove.add(wristM);
-// Connector strip palm → wrist
-const connGeo=new THREE.BoxGeometry(1.10,0.42,DEPTH);
-const connM=new THREE.Mesh(connGeo,mats.back);
-connM.position.set(0,-1.94,DEPTH/2);
-glove.add(connM);
-// Wrist binding band
-const wbShape=new THREE.Shape();
-wbShape.absellipse(0,-2.10,0.58,0.28,0,Math.PI*2,false,0);
-const wbM=new THREE.Mesh(new THREE.ShapeGeometry(wbShape,24),mats.binding);
-wbM.position.z=-0.01;
-glove.add(wbM);
-
-// ── FINGER TUBES ──────────────────────────────────────────────────────
-// [cx, baseY, tipY, radius]
-const FDATA=[
-  [-0.72, 0.94, 2.30, 0.150],  // pinky
-  [-0.28, 0.88, 2.62, 0.168],  // ring
-  [ 0.16, 0.84, 2.84, 0.185],  // middle
-  [ 0.60, 0.88, 2.64, 0.170],  // index
-];
-const HZ=DEPTH/2;
-FDATA.forEach(([cx,baseY,tipY,r])=>{
-  const pts=[
-    new THREE.Vector3(cx,baseY,HZ),
-    new THREE.Vector3(cx,baseY+(tipY-baseY)*0.5,HZ+0.02),
-    new THREE.Vector3(cx,tipY,HZ-0.05),
-  ];
-  const curve=new THREE.CatmullRomCurve3(pts);
-  glove.add(new THREE.Mesh(new THREE.TubeGeometry(curve,14,r,10,false),mats.back));
-  // Rounded fingertip
-  const cap=new THREE.Mesh(new THREE.SphereGeometry(r,10,8),mats.back);
-  cap.position.set(cx,tipY,HZ-0.05);
-  glove.add(cap);
-  // Binding ring at tip
-  const bRing=new THREE.Mesh(new THREE.TorusGeometry(r+0.01,0.030,6,18),mats.binding);
-  bRing.rotation.x=Math.PI/2;
-  bRing.position.set(cx,tipY-0.06,HZ-0.05);
-  glove.add(bRing);
-});
-
-// Finger gap lace dots
-[[-0.50,1.30],[-0.50,1.10],[-0.06,1.32],[-0.06,1.12],[0.38,1.30],[0.38,1.10]].forEach(([x,y])=>{
-  const m=new THREE.Mesh(new THREE.SphereGeometry(0.048,8,6),mats.laces);
-  m.position.set(x,y,-0.04);glove.add(m);
-});
-
-// ── THUMB TUBE ────────────────────────────────────────────────────────
-const thumbPts=[
-  new THREE.Vector3(0.88,0.78,HZ),
-  new THREE.Vector3(1.42,0.44,HZ-0.02),
-  new THREE.Vector3(1.78,0.06,HZ-0.06),
-];
-const thumbCurve=new THREE.CatmullRomCurve3(thumbPts);
-glove.add(new THREE.Mesh(new THREE.TubeGeometry(thumbCurve,14,0.235,10,false),mats.back));
-const thumbCap=new THREE.Mesh(new THREE.SphereGeometry(0.235,10,8),mats.back);
-thumbCap.position.set(1.78,0.06,HZ-0.06);
-glove.add(thumbCap);
-const thumbBand=new THREE.Mesh(new THREE.TorusGeometry(0.245,0.030,6,18),mats.binding);
-thumbBand.rotation.x=Math.PI/2;
-thumbBand.position.set(1.78,0.10,HZ-0.06);
-glove.add(thumbBand);
-
-// ── PALM LEATHER OVERLAY (front face) ────────────────────────────────
-const palmLeatherShape=new THREE.Shape();
-palmLeatherShape.absellipse(-0.04,-0.46,0.76,0.72,0,Math.PI*2,false,0);
-const palmLeatherM=new THREE.Mesh(new THREE.ShapeGeometry(palmLeatherShape,48),mats.palm);
-palmLeatherM.position.z=DEPTH+0.01;
-glove.add(palmLeatherM);
-
-// ── WEB GROUP ─────────────────────────────────────────────────────────
+// ── WEB GROUP (programmatic, overlaid on GLB) ─────────────────────────
 const webGroup=new THREE.Group();
 glove.add(webGroup);
 
+const W=0.22; // z offset: slightly in front of GLB back face (which is at z≈+0.19)
+
 function addWebBar(x1,y1,x2,y2,z){
-  const dx=x2-x1,dy=y2-y1,len=Math.sqrt(dx*dx+dy*dy),hw=0.052;
+  const dx=x2-x1,dy=y2-y1,len=Math.sqrt(dx*dx+dy*dy),hw=0.055;
   const nx=(-dy/len)*hw,ny=(dx/len)*hw;
   const s=new THREE.Shape();
   s.moveTo(x1+nx,y1+ny);s.lineTo(x2+nx,y2+ny);s.lineTo(x2-nx,y2-ny);s.lineTo(x1-nx,y1-ny);s.closePath();
@@ -368,25 +288,49 @@ function addWebBar(x1,y1,x2,y2,z){
 
 function updateWeb(){
   while(webGroup.children.length)webGroup.remove(webGroup.children[0]);
-  const W=-0.01;
   if(ST.web==='i-web'||ST.web==='single-post'){
-    addWebBar(0.80,0.84,1.06,0.00,W);
-    addWebBar(0.66,0.46,1.42,0.30,W);
+    addWebBar(0.62,0.80,0.90,-0.02,W);
+    addWebBar(0.46,0.42,1.36,0.26,W);
   }else if(ST.web==='h-web'){
-    addWebBar(0.78,0.84,0.86,0.00,W);
-    addWebBar(0.96,0.84,1.04,0.00,W);
-    addWebBar(0.64,0.44,1.40,0.28,W);
+    addWebBar(0.58,0.80,0.68,-0.02,W);
+    addWebBar(0.80,0.80,0.90,-0.02,W);
+    addWebBar(0.44,0.40,1.32,0.24,W);
   }else{
     const bs=new THREE.Shape();
-    bs.moveTo(0.72,0.86);bs.bezierCurveTo(0.96,0.88,1.36,0.70,1.42,0.38);
-    bs.bezierCurveTo(1.48,0.06,1.36,-0.10,1.14,-0.18);
-    bs.lineTo(1.00,-0.22);bs.bezierCurveTo(0.82,-0.04,0.74,0.22,0.68,0.46);
-    bs.bezierCurveTo(0.62,0.68,0.62,0.84,0.72,0.86);
+    bs.moveTo(0.52,0.82);bs.bezierCurveTo(0.78,0.86,1.28,0.68,1.34,0.36);
+    bs.bezierCurveTo(1.40,0.04,1.28,-0.12,1.06,-0.20);
+    bs.lineTo(0.92,-0.24);bs.bezierCurveTo(0.74,-0.06,0.66,0.20,0.60,0.44);
+    bs.bezierCurveTo(0.54,0.66,0.52,0.80,0.52,0.82);
     const bm=new THREE.Mesh(new THREE.ShapeGeometry(bs,32),mats.web);
     bm.position.z=W;webGroup.add(bm);
   }
 }
 window.updateWeb=updateWeb;
+
+// ── LOAD GLB MODEL FROM BLENDER ───────────────────────────────────────
+// Material name → zone mapping (matches generate_glove.py)
+const MAT_MAP={'GloveBack':'back','GlovePalm':'palm','GloveWeb':'web',
+  'GloveBinding':'binding','GloveLaces':'laces','GloveStitch':'stitching'};
+
+const loader=new THREE.GLTFLoader();
+loader.load('/glove.glb',(gltf)=>{
+  const model=gltf.scene;
+  model.traverse((child)=>{
+    if(!child.isMesh)return;
+    const mn=child.material&&child.material.name||'';
+    const zone=MAT_MAP[mn];
+    if(zone&&mats[zone]) child.material=mats[zone];
+    else child.material=mats.back;
+    child.castShadow=true;
+  });
+  glove.add(model);
+  // Initial web
+  updateWeb();
+},(xhr)=>{
+  // loading progress (optional)
+},(err)=>{
+  console.error('GLB load error',err);
+});
 
 // Resize canvas
 function onResize(){
@@ -402,7 +346,7 @@ window.addEventListener('resize',onResize);onResize();
 function setView(v){
   document.querySelectorAll('.vbtn').forEach(b=>b.classList.remove('on'));
   event.target.classList.add('on');
-  const vp={back:[0,0.5,-6.5,0,0.4,0.21],palm:[0,0.5,6.8,0,0.4,0.21],side:[4.5,0.5,0.21,0,0.4,0.21]}[v]||[0,0.5,-6.5,0,0.4,0.21];
+  const vp={back:[0,0.5,6.8,0,0.4,0],palm:[0,0.5,-6.8,0,0.4,0],side:[5.0,0.5,0,0,0.4,0]}[v]||[0,0.5,6.8,0,0.4,0];
   camera.position.set(vp[0],vp[1],vp[2]);controls.target.set(vp[3],vp[4],vp[5]);controls.update();
 }
 window.setView=setView;
