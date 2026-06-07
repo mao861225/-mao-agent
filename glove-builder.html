@@ -4,73 +4,58 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>手套客製化 | 阿男伍叁</title>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.168.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.168.0/examples/jsm/"}}</script>
 <style>
 :root{--bg:#0a0a0f;--surface:#13131a;--surface2:#1c1c27;--accent:#c8a84b;--accent-dk:#8b6914;--text:#e8e8f0;--muted:#888899;--border:#2a2a3a;--ok:#2db87d;--r:12px;--t:.2s ease}
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh}
-
-/* Header */
 .hdr{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
 .logo{display:flex;align-items:center;gap:12px}
-.logo-icon{width:38px;height:38px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:900;color:#000;font-size:15px;letter-spacing:-.5px}
+.logo-icon{width:38px;height:38px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:900;color:#000;font-size:15px}
 .logo h1{font-size:15px;font-weight:700}
 .logo p{font-size:11px;color:var(--muted)}
 .langs{display:flex;gap:3px;background:var(--surface2);border-radius:8px;padding:3px}
 .lb{padding:5px 11px;border:none;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;background:transparent;color:var(--muted);transition:var(--t)}
 .lb.on{background:var(--accent);color:#000}
-
-/* Steps */
 .steps{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;display:flex;overflow-x:auto}
-.stab{padding:13px 18px;font-size:12px;font-weight:500;color:var(--muted);border-bottom:3px solid transparent;display:flex;align-items:center;gap:7px;white-space:nowrap;cursor:default}
+.stab{padding:13px 18px;font-size:12px;font-weight:500;color:var(--muted);border-bottom:3px solid transparent;display:flex;align-items:center;gap:7px;white-space:nowrap}
 .stab.on{color:var(--accent);border-bottom-color:var(--accent)}
 .stab.done{color:var(--text)}
 .snum{width:20px;height:20px;border-radius:50%;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0}
 .stab.on .snum{background:var(--accent);color:#000}
 .stab.done .snum{background:var(--ok);color:#fff}
-
-/* Layout */
 .main{display:grid;grid-template-columns:1fr 360px;min-height:calc(100vh - 108px)}
 .opts{padding:28px 24px;border-right:1px solid var(--border)}
 .sc{display:none;animation:fi .25s ease}
 .sc.on{display:block}
 @keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-
-/* Section labels */
 .slabel{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);margin-bottom:18px}
-
-/* Option groups */
 .og{margin-bottom:24px}
 .olabel{font-size:13px;font-weight:600;margin-bottom:9px;display:flex;align-items:center;gap:5px}
 .req{width:5px;height:5px;border-radius:50%;background:var(--accent);flex-shrink:0}
-
-/* Radio pills */
 .rg{display:flex;flex-wrap:wrap;gap:7px}
 .ro{position:relative}
 .ro input{position:absolute;opacity:0;width:0;height:0}
 .ro label{display:flex;align-items:center;padding:9px 14px;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;font-size:12px;transition:var(--t);background:var(--surface);line-height:1}
 .ro input:checked+label{border-color:var(--accent);background:rgba(200,168,75,.12);color:var(--accent)}
 .ro label:hover{border-color:var(--accent-dk)}
-
-/* Color zones */
 .czones{display:flex;flex-direction:column;gap:14px}
 .czone{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px}
 .czone-hdr{display:flex;align-items:center;gap:10px;margin-bottom:11px}
 .cprev{width:26px;height:26px;border-radius:6px;border:2px solid var(--border);flex-shrink:0;transition:background .15s}
 .czone-name{font-size:13px;font-weight:600}
 .cname-cur{font-size:11px;color:var(--muted);margin-left:auto}
-.swatches{display:flex;flex-wrap:wrap;gap:5px}
-.sw{width:26px;height:26px;border-radius:6px;cursor:pointer;border:2.5px solid transparent;transition:transform .15s,border-color .15s;flex-shrink:0}
-.sw:hover{transform:scale(1.18);z-index:1;position:relative}
-.sw.on{border-color:#fff;transform:scale(1.1)}
-
-/* Inputs */
+.swatches{display:flex;flex-wrap:wrap;gap:8px}
+.sw-wrap{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer}
+.sw{width:56px;height:56px;border-radius:10px;border:2.5px solid transparent;transition:transform .15s,border-color .15s,box-shadow .15s;flex-shrink:0}
+.sw-wrap:hover .sw{transform:scale(1.1);box-shadow:0 0 0 2px var(--accent-dk)}
+.sw-wrap.on .sw{border-color:#fff;box-shadow:0 0 0 2px var(--accent)}
+.sw-lbl{font-size:9px;color:var(--muted);text-align:center;line-height:1.2;max-width:60px;word-break:break-word}
 .inp{width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:8px;padding:11px 13px;color:var(--text);font-size:13px;transition:var(--t)}
 .inp:focus{outline:none;border-color:var(--accent)}
 .inp::placeholder{color:var(--muted)}
 textarea.inp{height:90px;resize:vertical;font-family:inherit}
 .err{color:#e05c5c;font-size:11px;margin-top:5px;display:none}
-
-/* Nav buttons */
 .nav{display:flex;justify-content:space-between;align-items:center;margin-top:28px;padding-top:22px;border-top:1px solid var(--border)}
 .btn{padding:11px 26px;border-radius:8px;border:none;cursor:pointer;font-size:13px;font-weight:600;transition:var(--t)}
 .btn-p{background:var(--accent);color:#000}
@@ -78,11 +63,14 @@ textarea.inp{height:90px;resize:vertical;font-family:inherit}
 .btn-p:disabled{opacity:.5;cursor:not-allowed}
 .btn-s{background:var(--surface2);color:var(--text);border:1px solid var(--border)}
 .btn-s:hover{border-color:var(--accent-dk)}
-
-/* Preview panel */
 .preview{padding:28px 18px;position:sticky;top:108px;height:calc(100vh - 108px);overflow-y:auto;display:flex;flex-direction:column;gap:18px}
 .pvlabel{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
-.gbox{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px;display:flex;justify-content:center;align-items:center}
+.gbox{background:#0f0f18;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;height:280px}
+.gbox canvas{display:block}
+.vbtns{display:flex;gap:6px;margin-top:10px}
+.vbtn{flex:1;padding:7px 0;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:var(--muted);cursor:pointer;font-size:11px;font-weight:600;transition:var(--t)}
+.vbtn:hover,.vbtn.on{background:var(--accent);color:#000;border-color:var(--accent)}
+.drag-hint{font-size:11px;color:var(--muted);text-align:center;margin-top:7px}
 .scard{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px}
 .scardtitle{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
 .srow{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);font-size:11px}
@@ -90,18 +78,11 @@ textarea.inp{height:90px;resize:vertical;font-family:inherit}
 .skey{color:var(--muted)}
 .sval{font-weight:600;display:flex;align-items:center;gap:5px}
 .sdot{width:11px;height:11px;border-radius:3px;flex-shrink:0}
-
-/* Success */
 .succ{display:none;text-align:center;padding:60px 20px}
 .succ-icon{width:72px;height:72px;background:var(--ok);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 22px;font-size:32px}
 .succ h2{font-size:22px;margin-bottom:10px}
 .succ p{color:var(--muted);line-height:1.6;font-size:14px}
-
-@media(max-width:760px){
-  .main{grid-template-columns:1fr}
-  .preview{position:static;height:auto;border-top:1px solid var(--border)}
-  .stab .slbl{display:none}
-}
+@media(max-width:760px){.main{grid-template-columns:1fr}.preview{position:static;height:auto;border-top:1px solid var(--border)}.stab .slbl{display:none}}
 </style>
 </head>
 <body>
@@ -109,10 +90,7 @@ textarea.inp{height:90px;resize:vertical;font-family:inherit}
 <header class="hdr">
   <div class="logo">
     <div class="logo-icon">53</div>
-    <div>
-      <h1 id="bname">阿男伍叁</h1>
-      <p id="bsub">手套客製化</p>
-    </div>
+    <div><h1 id="bname">阿男伍叁</h1><p id="bsub">手套客製化</p></div>
   </div>
   <div class="langs">
     <button class="lb on" onclick="setLang('zh')">中文</button>
@@ -129,14 +107,10 @@ textarea.inp{height:90px;resize:vertical;font-family:inherit}
 </div>
 
 <div class="main">
-
-<!-- ─── Left ─── -->
 <div class="opts">
 
-  <!-- Step 1 -->
   <div class="sc on" id="s1">
     <p class="slabel" data-k="step1">基本配置</p>
-
     <div class="og">
       <div class="olabel"><span data-k="throwHand">慣用手</span><div class="req"></div></div>
       <div class="rg">
@@ -144,21 +118,20 @@ textarea.inp{height:90px;resize:vertical;font-family:inherit}
         <div class="ro"><input type="radio" name="hand" id="hl" value="left"><label for="hl" data-k="lHand">左投（戴右手）</label></div>
       </div>
     </div>
-
     <div class="og">
       <div class="olabel"><span data-k="size">尺寸</span><div class="req"></div></div>
       <div class="rg">
-        <div class="ro"><input type="radio" name="size" id="s1125" value='11.25" ' checked><label for="s1125">11.25"</label></div>
+        <div class="ro"><input type="radio" name="size" id="s11" value='11"'><label for="s11">11"</label></div>
+        <div class="ro"><input type="radio" name="size" id="s1125" value='11.25"' checked><label for="s1125">11.25"</label></div>
         <div class="ro"><input type="radio" name="size" id="s115" value='11.5"'><label for="s115">11.5"</label></div>
         <div class="ro"><input type="radio" name="size" id="s1175" value='11.75"'><label for="s1175">11.75"</label></div>
         <div class="ro"><input type="radio" name="size" id="s12" value='12"'><label for="s12">12"</label></div>
         <div class="ro"><input type="radio" name="size" id="s125" value='12.5"'><label for="s125">12.5"</label></div>
       </div>
     </div>
-
     <div class="og">
       <div class="olabel"><span data-k="webStyle">網型</span><div class="req"></div></div>
-      <div class="rg" id="web-rg">
+      <div class="rg">
         <div class="ro"><input type="radio" name="web" id="wi" value="i-web" checked><label for="wi" data-wk="i-web">I 型網</label></div>
         <div class="ro"><input type="radio" name="web" id="wh" value="h-web"><label for="wh" data-wk="h-web">H 型網</label></div>
         <div class="ro"><input type="radio" name="web" id="wb" value="basket"><label for="wb" data-wk="basket">籃型網</label></div>
@@ -166,7 +139,6 @@ textarea.inp{height:90px;resize:vertical;font-family:inherit}
         <div class="ro"><input type="radio" name="web" id="wmt" value="modified-trap"><label for="wmt" data-wk="modified-trap">修改型梯形網</label></div>
       </div>
     </div>
-
     <div class="og">
       <div class="olabel"><span data-k="stiffness">手套硬度</span></div>
       <div class="rg">
@@ -175,11 +147,9 @@ textarea.inp{height:90px;resize:vertical;font-family:inherit}
         <div class="ro"><input type="radio" name="stiff" id="sft" value="soft"><label for="sft" data-k="soft">軟</label></div>
       </div>
     </div>
-
     <div class="nav"><div></div><button class="btn btn-p" onclick="go(2)" data-k="next">下一步</button></div>
   </div>
 
-  <!-- Step 2 -->
   <div class="sc" id="s2">
     <p class="slabel" data-k="step2">顏色選擇</p>
     <div class="czones" id="czones"></div>
@@ -189,13 +159,12 @@ textarea.inp{height:90px;resize:vertical;font-family:inherit}
     </div>
   </div>
 
-  <!-- Step 3 -->
   <div class="sc" id="s3">
     <p class="slabel" data-k="step3">個人刺繡</p>
-    <div class="og"><div class="olabel"><span data-k="thumbTxt">拇指刺繡文字</span></div><input class="inp" id="thumbTxt" maxlength="15" placeholder=""></div>
-    <div class="og"><div class="olabel"><span data-k="pinkyTxt">尾指刺繡文字</span></div><input class="inp" id="pinkyTxt" maxlength="15" placeholder=""></div>
-    <div class="og"><div class="olabel"><span data-k="palmTxt">掌心印字</span></div><input class="inp" id="palmTxt" maxlength="20" placeholder=""></div>
-    <div class="og"><div class="olabel"><span data-k="wristTxt">腕帶文字</span></div><input class="inp" id="wristTxt" maxlength="20" placeholder=""></div>
+    <div class="og"><div class="olabel"><span data-k="thumbTxt">拇指刺繡文字</span></div><input class="inp" id="thumbTxt" maxlength="15"></div>
+    <div class="og"><div class="olabel"><span data-k="pinkyTxt">尾指刺繡文字</span></div><input class="inp" id="pinkyTxt" maxlength="15"></div>
+    <div class="og"><div class="olabel"><span data-k="palmTxt">掌心印字</span></div><input class="inp" id="palmTxt" maxlength="20"></div>
+    <div class="og"><div class="olabel"><span data-k="wristTxt">腕帶文字</span></div><input class="inp" id="wristTxt" maxlength="20"></div>
     <div class="og"><div class="olabel"><span data-k="notes">特殊需求</span></div><textarea class="inp" id="notesTxt"></textarea></div>
     <div class="nav">
       <button class="btn btn-s" onclick="go(2)" data-k="prev">上一步</button>
@@ -203,23 +172,21 @@ textarea.inp{height:90px;resize:vertical;font-family:inherit}
     </div>
   </div>
 
-  <!-- Step 4 -->
   <div class="sc" id="s4">
     <p class="slabel" data-k="step4">訂購資訊</p>
-    <div class="og"><div class="olabel"><span data-k="cName">姓名</span><div class="req"></div></div><input class="inp" id="cName" placeholder=""></div>
+    <div class="og"><div class="olabel"><span data-k="cName">姓名</span><div class="req"></div></div><input class="inp" id="cName"></div>
     <div class="og">
       <div class="olabel"><span data-k="cEmail">Email</span><div class="req"></div></div>
-      <input class="inp" type="email" id="cEmail" placeholder="">
+      <input class="inp" type="email" id="cEmail">
       <p class="err" id="emailErr" data-k="emailErr">Email 格式不正確</p>
     </div>
-    <div class="og"><div class="olabel"><span data-k="cPhone">電話</span></div><input class="inp" type="tel" id="cPhone" placeholder=""></div>
+    <div class="og"><div class="olabel"><span data-k="cPhone">電話</span></div><input class="inp" type="tel" id="cPhone"></div>
     <div class="nav">
       <button class="btn btn-s" onclick="go(3)" data-k="prev">上一步</button>
       <button class="btn btn-p" id="submitBtn" onclick="doSubmit()" data-k="submit">送出訂單</button>
     </div>
   </div>
 
-  <!-- Success -->
   <div class="succ" id="succScreen">
     <div class="succ-icon">✓</div>
     <h2 data-k="succTitle">訂單已送出！</h2>
@@ -228,193 +195,342 @@ textarea.inp{height:90px;resize:vertical;font-family:inherit}
 
 </div>
 
-<!-- ─── Right ─── -->
+<!-- Preview -->
 <div class="preview">
   <div>
     <p class="pvlabel" data-k="preview">預覽</p>
-    <div class="gbox">
-      <!-- Baseball Glove SVG -->
-      <svg id="gsvg" viewBox="0 0 280 360" xmlns="http://www.w3.org/2000/svg" width="230" height="295" style="transition:transform .3s">
-        <defs>
-          <filter id="sh"><feDropShadow dx="0" dy="3" stdDeviation="7" flood-color="rgba(0,0,0,.65)"/></filter>
-        </defs>
-
-        <!-- Wrist strap -->
-        <path id="sv-wrist"
-          d="M88,312 L88,350 Q140,363 192,350 L192,312 C178,319 161,322 140,322 C119,322 102,319 88,312Z"
-          fill="#C19A6B" filter="url(#sh)"/>
-        <line x1="98" y1="332" x2="182" y2="332" stroke="#8B6914" stroke-width="1.5" stroke-dasharray="6,4" opacity=".6"/>
-
-        <!-- Main glove body (back view) -->
-        <path id="sv-back"
-          d="M88,312 C68,292 48,260 48,215 C48,188 54,172 65,164
-             C74,157 82,160 90,152 C94,146 97,136 101,124
-             L108,124 L112,108 L120,124 L128,122 L131,94 L136,122
-             L144,122 L148,94 L153,122 L161,122 L164,108 L172,124
-             L179,124 C183,136 186,146 190,152 C198,160 206,157 215,164
-             C226,172 232,188 232,215 C232,260 212,292 192,312
-             C178,319 161,322 140,322 C119,322 102,319 88,312Z"
-          fill="#C19A6B" filter="url(#sh)"/>
-
-        <!-- Finger dividers (detail lines on back) -->
-        <line x1="109" y1="124" x2="104" y2="172" stroke="#7A5C10" stroke-width="1.5" opacity=".5"/>
-        <line x1="132" y1="94" x2="132" y2="168" stroke="#7A5C10" stroke-width="1.5" opacity=".5"/>
-        <line x1="152" y1="94" x2="152" y2="168" stroke="#7A5C10" stroke-width="1.5" opacity=".5"/>
-        <line x1="171" y1="124" x2="176" y2="172" stroke="#7A5C10" stroke-width="1.5" opacity=".5"/>
-
-        <!-- Thumb -->
-        <path id="sv-thumb"
-          d="M215,164 C225,154 245,148 254,162 C263,177 255,205 241,220
-             C231,230 220,229 212,222 C207,217 207,204 210,192 C213,179 213,172 215,164Z"
-          fill="#C19A6B" filter="url(#sh)"/>
-
-        <!-- Web area (between index and thumb) -->
-        <path id="sv-web"
-          d="M179,124 C192,112 210,108 218,120 C225,131 222,146 215,157
-             C210,151 207,145 205,138 L200,148 C196,141 190,134 183,128Z"
-          fill="#6B4510"/>
-
-        <!-- Web detail: I-Web (default) -->
-        <g id="webDetail" transform="translate(200,120)">
-          <rect id="wv" x="-4" y="0" width="8" height="26" rx="3" fill="#4A3008"/>
-          <rect id="wh" x="-14" y="10" width="28" height="7" rx="3" fill="#4A3008"/>
-        </g>
-
-        <!-- Palm overlay (translucent color zone) -->
-        <ellipse id="sv-palm" cx="140" cy="225" rx="63" ry="58" fill="#B8860B" opacity=".32"/>
-
-        <!-- Laces (dots between fingers and on edges) -->
-        <g id="sv-laces">
-          <circle cx="110" cy="138" r="3.5" fill="#C19A6B"/>
-          <circle cx="108" cy="150" r="3.5" fill="#C19A6B"/>
-          <circle cx="134" cy="128" r="3.5" fill="#C19A6B"/>
-          <circle cx="134" cy="141" r="3.5" fill="#C19A6B"/>
-          <circle cx="153" cy="128" r="3.5" fill="#C19A6B"/>
-          <circle cx="153" cy="141" r="3.5" fill="#C19A6B"/>
-          <circle cx="170" cy="138" r="3.5" fill="#C19A6B"/>
-          <circle cx="172" cy="150" r="3.5" fill="#C19A6B"/>
-          <circle cx="54" cy="195" r="3" fill="#C19A6B"/>
-          <circle cx="52" cy="213" r="3" fill="#C19A6B"/>
-          <circle cx="54" cy="232" r="3" fill="#C19A6B"/>
-          <circle cx="226" cy="195" r="3" fill="#C19A6B"/>
-          <circle cx="228" cy="213" r="3" fill="#C19A6B"/>
-          <circle cx="226" cy="232" r="3" fill="#C19A6B"/>
-        </g>
-
-        <!-- Stitching -->
-        <g id="sv-stitching">
-          <path d="M106,202 Q140,188 174,202" fill="none" stroke="#7A5C10" stroke-width="1.5" stroke-dasharray="5,3"/>
-          <path d="M100,228 Q140,214 180,228" fill="none" stroke="#7A5C10" stroke-width="1.5" stroke-dasharray="5,3"/>
-        </g>
-
-        <!-- Binding (edge highlight) -->
-        <path id="sv-binding"
-          d="M88,312 C68,292 48,260 48,215 C48,188 54,172 65,164
-             C74,157 82,160 90,152 C94,146 97,136 101,124
-             L108,124 L112,108 L120,124 L128,122 L131,94 L136,122
-             L144,122 L148,94 L153,122 L161,122 L164,108 L172,124
-             L179,124 C183,136 186,146 190,152 C198,160 206,157 215,164"
-          fill="none" stroke="#D4A017" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-        <path id="sv-binding-thumb"
-          d="M215,164 C225,154 245,148 254,162 C263,177 255,205 241,220 C231,230 220,229 212,222"
-          fill="none" stroke="#D4A017" stroke-width="3" stroke-linecap="round"/>
-
-      </svg>
+    <div class="gbox" id="canvasBox"><canvas id="gloveCanvas"></canvas></div>
+    <div class="vbtns">
+      <button class="vbtn on" onclick="setView('front')" data-k="vFront">正面</button>
+      <button class="vbtn" onclick="setView('side')" data-k="vSide">側面</button>
+      <button class="vbtn" onclick="setView('back')" data-k="vBack">背面</button>
+      <button class="vbtn" onclick="setView('top')" data-k="vTop">頂視</button>
     </div>
+    <p class="drag-hint" data-k="dragHint">拖曳旋轉</p>
   </div>
-
-  <!-- Summary -->
   <div class="scard">
     <p class="scardtitle" data-k="summary">配置摘要</p>
     <div id="srows"></div>
   </div>
 </div>
+</div>
 
-</div><!-- /main -->
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-<script>
-// ── i18n ──────────────────────────────────────────────────────────────────────
+// ── i18n ─────────────────────────────────────────────────────────────────────
 const T = {
-  zh:{
-    brand:'阿男伍叁',bsub:'手套客製化',
-    step1:'基本配置',step2:'顏色選擇',step3:'個人刺繡',step4:'訂購資訊',
-    throwHand:'慣用手',rHand:'右投（戴左手）',lHand:'左投（戴右手）',
-    size:'尺寸',webStyle:'網型',stiffness:'手套硬度',
-    stiff:'硬',medium:'中',soft:'軟',
-    back:'外皮',palm:'掌心',web:'網',laces:'綁帶',binding:'邊框',stitching:'縫線',
-    thumbTxt:'拇指刺繡文字',pinkyTxt:'尾指刺繡文字',palmTxt:'掌心印字',wristTxt:'腕帶文字',notes:'特殊需求',
-    cName:'姓名',cEmail:'Email',cPhone:'電話',
-    submit:'送出訂單',submitting:'送出中...',
-    succTitle:'訂單已送出！',succMsg:'我們將在 2 個工作天內與您聯繫確認報價。',
-    preview:'預覽',summary:'配置摘要',next:'下一步',prev:'上一步',
-    emailErr:'Email 格式不正確',nameErr:'請填寫姓名',
-    ws:{'i-web':'I 型網','h-web':'H 型網','basket':'籃型網','single-post':'單柱網','modified-trap':'修改型梯形網'},
-    sl:{stiff:'硬',medium:'中',soft:'軟'},hl:{right:'右投',left:'左投'}
-  },
-  en:{
-    brand:'A-Nan 53',bsub:'Glove Customizer',
-    step1:'Base Setup',step2:'Colors',step3:'Personalize',step4:'Order Info',
-    throwHand:'Throwing Hand',rHand:'Right Hand Throw',lHand:'Left Hand Throw',
-    size:'Size',webStyle:'Web Style',stiffness:'Stiffness',
-    stiff:'Stiff',medium:'Medium',soft:'Soft',
-    back:'Back Leather',palm:'Palm',web:'Web',laces:'Laces',binding:'Binding',stitching:'Stitching',
-    thumbTxt:'Thumb Embroidery',pinkyTxt:'Pinky Embroidery',palmTxt:'Palm Stamp',wristTxt:'Wrist Text',notes:'Special Instructions',
-    cName:'Name',cEmail:'Email',cPhone:'Phone',
-    submit:'Submit Order',submitting:'Submitting...',
-    succTitle:'Order Submitted!',succMsg:'We will contact you within 2 business days.',
-    preview:'Preview',summary:'Configuration',next:'Next',prev:'Back',
-    emailErr:'Invalid email format',nameErr:'Please enter your name',
-    ws:{'i-web':'I-Web','h-web':'H-Web','basket':'Basket Web','single-post':'Single Post','modified-trap':'Modified Trap'},
-    sl:{stiff:'Stiff',medium:'Medium',soft:'Soft'},hl:{right:'Right',left:'Left'}
-  },
-  ja:{
-    brand:'アーナン53',bsub:'グローブカスタマイズ',
-    step1:'基本設定',step2:'カラー選択',step3:'刺繍',step4:'注文情報',
-    throwHand:'利き手',rHand:'右投げ（左手装着）',lHand:'左投げ（右手装着）',
-    size:'サイズ',webStyle:'ウェブ',stiffness:'硬さ',
-    stiff:'硬い',medium:'普通',soft:'柔らかい',
-    back:'背革',palm:'手のひら革',web:'ウェブ',laces:'レース',binding:'バインディング',stitching:'ステッチ',
-    thumbTxt:'親指刺繍',pinkyTxt:'小指刺繍',palmTxt:'パームスタンプ',wristTxt:'リスト文字',notes:'特記事項',
-    cName:'お名前',cEmail:'メールアドレス',cPhone:'電話番号',
-    submit:'注文を送信',submitting:'送信中...',
-    succTitle:'注文を受け付けました！',succMsg:'2営業日以内にご連絡いたします。',
-    preview:'プレビュー',summary:'設定内容',next:'次へ',prev:'戻る',
-    emailErr:'メールアドレスの形式が正しくありません',nameErr:'お名前を入力してください',
-    ws:{'i-web':'I型ウェブ','h-web':'H型ウェブ','basket':'バスケットウェブ','single-post':'シングルポスト','modified-trap':'変形トラップ'},
-    sl:{stiff:'硬い',medium:'普通',soft:'柔らかい'},hl:{right:'右投げ',left:'左投げ'}
-  }
+  zh:{brand:'阿男伍叁',bsub:'手套客製化',step1:'基本配置',step2:'顏色選擇',step3:'個人刺繡',step4:'訂購資訊',throwHand:'慣用手',rHand:'右投（戴左手）',lHand:'左投（戴右手）',size:'尺寸',webStyle:'網型',stiffness:'手套硬度',stiff:'硬',medium:'中',soft:'軟',back:'外皮',palm:'掌心',web:'網',laces:'綁帶',binding:'邊框',stitching:'縫線',thumbTxt:'拇指刺繡文字',pinkyTxt:'尾指刺繡文字',palmTxt:'掌心印字',wristTxt:'腕帶文字',notes:'特殊需求',cName:'姓名',cEmail:'Email',cPhone:'電話',submit:'送出訂單',submitting:'送出中...',succTitle:'訂單已送出！',succMsg:'我們將在 2 個工作天內與您聯繫確認報價。',preview:'預覽',summary:'配置摘要',next:'下一步',prev:'上一步',emailErr:'Email 格式不正確',nameErr:'請填寫姓名',vFront:'正面',vSide:'側面',vBack:'背面',vTop:'頂視',dragHint:'拖曳旋轉',ws:{'i-web':'I 型網','h-web':'H 型網','basket':'籃型網','single-post':'單柱網','modified-trap':'修改型梯形網'},sl:{stiff:'硬',medium:'中',soft:'軟'},hl:{right:'右投',left:'左投'}},
+  en:{brand:'A-Nan 53',bsub:'Glove Customizer',step1:'Base Setup',step2:'Colors',step3:'Personalize',step4:'Order Info',throwHand:'Throwing Hand',rHand:'Right Hand Throw',lHand:'Left Hand Throw',size:'Size',webStyle:'Web Style',stiffness:'Stiffness',stiff:'Stiff',medium:'Medium',soft:'Soft',back:'Back Leather',palm:'Palm',web:'Web',laces:'Laces',binding:'Binding',stitching:'Stitching',thumbTxt:'Thumb Embroidery',pinkyTxt:'Pinky Embroidery',palmTxt:'Palm Stamp',wristTxt:'Wrist Text',notes:'Special Instructions',cName:'Name',cEmail:'Email',cPhone:'Phone',submit:'Submit Order',submitting:'Submitting...',succTitle:'Order Submitted!',succMsg:'We will contact you within 2 business days.',preview:'Preview',summary:'Configuration',next:'Next',prev:'Back',emailErr:'Invalid email format',nameErr:'Please enter your name',vFront:'Front',vSide:'Side',vBack:'Back',vTop:'Top',dragHint:'Drag to rotate',ws:{'i-web':'I-Web','h-web':'H-Web','basket':'Basket Web','single-post':'Single Post','modified-trap':'Modified Trap'},sl:{stiff:'Stiff',medium:'Medium',soft:'Soft'},hl:{right:'Right',left:'Left'}},
+  ja:{brand:'アーナン53',bsub:'グローブカスタマイズ',step1:'基本設定',step2:'カラー選択',step3:'刺繍',step4:'注文情報',throwHand:'利き手',rHand:'右投げ',lHand:'左投げ',size:'サイズ',webStyle:'ウェブ',stiffness:'硬さ',stiff:'硬い',medium:'普通',soft:'柔らかい',back:'背革',palm:'手のひら革',web:'ウェブ',laces:'レース',binding:'バインディング',stitching:'ステッチ',thumbTxt:'親指刺繍',pinkyTxt:'小指刺繍',palmTxt:'パームスタンプ',wristTxt:'リスト文字',notes:'特記事項',cName:'お名前',cEmail:'メールアドレス',cPhone:'電話番号',submit:'注文を送信',submitting:'送信中...',succTitle:'注文を受け付けました！',succMsg:'2営業日以内にご連絡いたします。',preview:'プレビュー',summary:'設定内容',next:'次へ',prev:'戻る',emailErr:'メールアドレスの形式が正しくありません',nameErr:'お名前を入力してください',vFront:'正面',vSide:'側面',vBack:'背面',vTop:'上面',dragHint:'ドラッグで回転',ws:{'i-web':'I型ウェブ','h-web':'H型ウェブ','basket':'バスケットウェブ','single-post':'シングルポスト','modified-trap':'変形トラップ'},sl:{stiff:'硬い',medium:'普通',soft:'柔らかい'},hl:{right:'右投げ',left:'左投げ'}}
 };
 
 // ── Colors ────────────────────────────────────────────────────────────────────
-const COLORS = [
-  {k:'camel',h:'#C19A6B',n:'Camel'},{k:'tan',h:'#D2B48C',n:'Tan'},
-  {k:'brown',h:'#3D1C02',n:'Dark Brown'},{k:'black',h:'#1A1A1A',n:'Black'},
-  {k:'navy',h:'#0B2167',n:'Navy'},{k:'red',h:'#CC0000',n:'Red'},
-  {k:'royal',h:'#1A4BBF',n:'Royal Blue'},{k:'green',h:'#1A5C1A',n:'Forest Green'},
-  {k:'orange',h:'#E05C00',n:'Orange'},{k:'grey',h:'#4A4A4A',n:'Graphite'},
-  {k:'white',h:'#F0EBE3',n:'White'},{k:'gold',h:'#D4A017',n:'Gold'},
-  {k:'purple',h:'#5C1A8A',n:'Purple'},{k:'columbia',h:'#7BB2CC',n:'Columbia Blue'},
-  {k:'maroon',h:'#800020',n:'Maroon'}
+const COLORS=[
+  {k:'black',   h:'#1A1A1A', n:'Black'},
+  {k:'grey',    h:'#5A5A5A', n:'Grey'},
+  {k:'white',   h:'#F2EDE4', n:'White'},
+  {k:'blonde',  h:'#E8D49A', n:'Blonde'},
+  {k:'lavender',h:'#B4A8CC', n:'Lavender'},
+  {k:'yellow',  h:'#F0CC00', n:'Yellow'},
+  {k:'tan',     h:'#D2B48C', n:'Tan'},
+  {k:'camel',   h:'#C19A6B', n:'Camel'},
+  {k:'orange',  h:'#E05C00', n:'Orange'},
+  {k:'orange-tan',h:'#C87040',n:'Orange Tan'},
+  {k:'chestnut',h:'#3A1A08', n:'Oiled Chestnut'},
+  {k:'brown',   h:'#5C3010', n:'Brown'},
+  {k:'red',     h:'#CC0000', n:'Red'},
+  {k:'maroon',  h:'#800020', n:'Maroon'},
+  {k:'pink',    h:'#E87FA0', n:'Pink'},
+  {k:'purple',  h:'#5C1A8A', n:'Purple'},
+  {k:'navy',    h:'#0B2167', n:'Navy Blue'},
+  {k:'royal',   h:'#1A4BBF', n:'Royal Blue'},
+  {k:'sky',     h:'#29A8D4', n:'Sky Blue'},
+  {k:'green',   h:'#1A5C1A', n:'Forest'},
+  {k:'mint',    h:'#7ECBA0', n:'Mint'},
+  {k:'gold',    h:'#D4A017', n:'Gold'},
 ];
 
-const ZONES = [
-  {id:'back',  els:['sv-back','sv-thumb'],           dk:'camel'},
-  {id:'palm',  els:['sv-palm'],                      dk:'camel'},
-  {id:'web',   els:['sv-web','wv','wh'],             dk:'brown'},
-  {id:'laces', els:['sv-laces'],  grp:true,          dk:'camel'},
-  {id:'binding',els:['sv-binding','sv-binding-thumb'],stroke:true,dk:'gold'},
-  {id:'stitching',els:['sv-stitching'],grp:true,stroke:true,dk:'brown'},
+const ZONES=[
+  {id:'back',  dk:'camel'},
+  {id:'palm',  dk:'camel'},
+  {id:'web',   dk:'brown'},
+  {id:'laces', dk:'camel'},
+  {id:'binding',dk:'gold'},
+  {id:'stitching',dk:'brown'},
 ];
 
 // ── State ─────────────────────────────────────────────────────────────────────
-let lang = 'zh';
-const ST = {
-  hand:'right', size:'11.25"', web:'i-web', stiff:'medium',
-  colors: Object.fromEntries(ZONES.map(z=>[z.id,COLORS.find(c=>c.k===z.dk)])),
+let lang='zh';
+const ST={
+  hand:'right',size:'11.25"',web:'i-web',stiff:'medium',
+  colors:Object.fromEntries(ZONES.map(z=>[z.id,COLORS.find(c=>c.k===z.dk)])),
 };
 
+// ── Three.js ──────────────────────────────────────────────────────────────────
+const canvas=document.getElementById('gloveCanvas');
+const box=document.getElementById('canvasBox');
+const W=box.clientWidth, H=box.clientHeight;
+canvas.width=W; canvas.height=H;
+
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
+renderer.setSize(W,H);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+renderer.shadowMap.enabled=true;
+renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+renderer.outputColorSpace=THREE.SRGBColorSpace;
+renderer.toneMapping=THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure=1.1;
+
+const scene=new THREE.Scene();
+scene.background=new THREE.Color(0x0f0f18);
+scene.fog=new THREE.Fog(0x0f0f18,12,20);
+
+const camera=new THREE.PerspectiveCamera(40,W/H,0.1,50);
+camera.position.set(0,0.4,5.2);
+
+const controls=new OrbitControls(camera,canvas);
+controls.enableDamping=true;
+controls.dampingFactor=0.07;
+controls.enableZoom=false;
+controls.enablePan=false;
+controls.minPolarAngle=Math.PI*0.15;
+controls.maxPolarAngle=Math.PI*0.85;
+controls.target.set(0,0.15,0);
+
+// Lighting
+const ambient=new THREE.AmbientLight(0xfff8f0,0.55);
+scene.add(ambient);
+
+const sun=new THREE.DirectionalLight(0xfff5e0,2.0);
+sun.position.set(3,6,5);
+sun.castShadow=true;
+sun.shadow.mapSize.set(1024,1024);
+sun.shadow.camera.near=0.5;
+sun.shadow.camera.far=20;
+scene.add(sun);
+
+const fill=new THREE.DirectionalLight(0xd0e8ff,0.5);
+fill.position.set(-4,3,-2);
+scene.add(fill);
+
+const rim=new THREE.DirectionalLight(0xffe8c0,0.35);
+rim.position.set(0,-3,-5);
+scene.add(rim);
+
+// Ground (for shadow)
+const ground=new THREE.Mesh(
+  new THREE.PlaneGeometry(10,10),
+  new THREE.ShadowMaterial({opacity:0.18})
+);
+ground.rotation.x=-Math.PI/2;
+ground.position.y=-2.2;
+ground.receiveShadow=true;
+scene.add(ground);
+
+// ── Materials (shared, update color in-place) ─────────────────────────────────
+function mkMat(hex,rough=0.82,metal=0.04){
+  return new THREE.MeshStandardMaterial({
+    color:new THREE.Color(hex),roughness:rough,metalness:metal
+  });
+}
+const mats={
+  back:     mkMat('#C19A6B'),
+  palm:     mkMat('#C19A6B'),
+  web:      mkMat('#8B6914',0.88,0.02),
+  laces:    mkMat('#C19A6B',0.78,0.06),
+  binding:  mkMat('#D4A017',0.65,0.12),
+  stitching:mkMat('#7A5C10',0.92,0.01),
+  thumb:    mkMat('#C19A6B'),  // same as back by default (share back color)
+};
+// thumb shares back color by default
+mats.thumb=mats.back;
+
+// ── Glove group ───────────────────────────────────────────────────────────────
+const glove=new THREE.Group();
+glove.rotation.x=0.08;  // slight tilt forward
+scene.add(glove);
+
+function addShadow(m){m.castShadow=true;m.receiveShadow=true;return m;}
+
+// Helper: build a capsule-like shape (cylinder + two half-spheres)
+function mkCapsule(rTop,rBot,h,mat,seg=20){
+  const g=new THREE.Group();
+  const cyl=addShadow(new THREE.Mesh(new THREE.CylinderGeometry(rTop,rBot,h,seg),mat));
+  const top=addShadow(new THREE.Mesh(new THREE.SphereGeometry(rTop,seg,10,0,Math.PI*2,0,Math.PI/2),mat));
+  top.position.y=h/2;
+  const bot=addShadow(new THREE.Mesh(new THREE.SphereGeometry(rBot,seg,10,0,Math.PI*2,Math.PI/2,Math.PI/2),mat));
+  bot.position.y=-h/2;
+  g.add(cyl,top,bot);
+  return g;
+}
+
+// ── Main body ─────────────────────────────────────────────────────────────────
+const bodyGeo=new THREE.SphereGeometry(1,48,32);
+const body=addShadow(new THREE.Mesh(bodyGeo,mats.back));
+body.scale.set(1.08,1.38,0.54);
+body.position.set(-0.06,0.02,0);
+glove.add(body);
+
+// ── Wrist ─────────────────────────────────────────────────────────────────────
+const wrist=addShadow(new THREE.Mesh(new THREE.CylinderGeometry(0.38,0.44,0.42,24),mats.back));
+wrist.position.set(-0.06,-1.28,0);
+glove.add(wrist);
+
+// Wrist cap (bottom)
+const wristCap=addShadow(new THREE.Mesh(new THREE.SphereGeometry(0.44,24,12,0,Math.PI*2,Math.PI/2,Math.PI/2),mats.back));
+wristCap.position.set(-0.06,-1.49,0);
+glove.add(wristCap);
+
+// ── Binding strip around wrist ────────────────────────────────────────────────
+const bindTorus=addShadow(new THREE.Mesh(new THREE.TorusGeometry(0.44,0.025,10,40),mats.binding));
+bindTorus.position.set(-0.06,-1.09,0);
+bindTorus.rotation.x=Math.PI/2;
+glove.add(bindTorus);
+
+// ── Fingers ───────────────────────────────────────────────────────────────────
+// Each finger: [x offset, y base, height, radius, z-rotation degrees]
+const fingerDefs=[
+  [-0.43, 1.22, 0.50, 0.107, 13],   // Pinky
+  [-0.14, 1.30, 0.61, 0.116, 4],    // Ring
+  [ 0.17, 1.34, 0.67, 0.120, -2],   // Middle (tallest)
+  [ 0.46, 1.28, 0.59, 0.113, -13],  // Index
+];
+fingerDefs.forEach(([fx,fy,fh,fr,fang])=>{
+  const f=mkCapsule(fr,fr*0.86,fh,mats.back);
+  f.position.set(fx, fy+fh/2, 0.06);
+  f.rotation.z=fang*Math.PI/180;
+  glove.add(f);
+});
+
+// Finger binding (edge strips at fingertip boundary)
+[-0.43,-0.14,0.17,0.46].forEach((fx,i)=>{
+  const bt=addShadow(new THREE.Mesh(new THREE.TorusGeometry(0.113-i*0.003,0.018,8,24),mats.binding));
+  const fy=[1.22,1.30,1.34,1.28][i];
+  bt.position.set(fx,fy-0.02,0.06);
+  bt.rotation.x=Math.PI/2;
+  glove.add(bt);
+});
+
+// ── Thumb ─────────────────────────────────────────────────────────────────────
+const thumb=mkCapsule(0.136,0.116,0.60,mats.back);
+thumb.position.set(1.14,0.56,0.04);
+thumb.rotation.z=-66*Math.PI/180;
+glove.add(thumb);
+
+// Thumb binding
+const thumbBind=addShadow(new THREE.Mesh(new THREE.TorusGeometry(0.116,0.020,8,24),mats.binding));
+thumbBind.position.set(0.73,0.85,0.04);
+thumbBind.rotation.z=(-66+90)*Math.PI/180;
+thumbBind.rotation.x=Math.PI/2;
+glove.add(thumbBind);
+
+// ── Web (I-Web between index and thumb) ──────────────────────────────────────
+// Web base area (leather triangle)
+const webShape=new THREE.Shape();
+webShape.moveTo(0,0); webShape.lineTo(-0.12,0.38); webShape.lineTo(0.12,0.38); webShape.closePath();
+const webBase=addShadow(new THREE.Mesh(new THREE.ShapeGeometry(webShape),mats.web));
+webBase.position.set(0.82,1.00,0.14);
+webBase.rotation.z=-18*Math.PI/180;
+webBase.rotation.x=-10*Math.PI/180;
+glove.add(webBase);
+
+// Web vertical bar (I-Web)
+const webV=addShadow(new THREE.Mesh(new THREE.BoxGeometry(0.055,0.36,0.03),mats.web));
+webV.position.set(0.82,1.08,0.18);
+webV.rotation.z=-18*Math.PI/180;
+glove.add(webV);
+
+// Web horizontal bar
+const webH=addShadow(new THREE.Mesh(new THREE.BoxGeometry(0.26,0.055,0.03),mats.web));
+webH.position.set(0.82,1.10,0.18);
+webH.rotation.z=-18*Math.PI/180;
+glove.add(webH);
+
+// ── Palm overlay ──────────────────────────────────────────────────────────────
+const palmGeo=new THREE.SphereGeometry(0.88,32,24,0,Math.PI*2,Math.PI*0.42,Math.PI*0.52);
+const palm=addShadow(new THREE.Mesh(palmGeo,mats.palm));
+palm.scale.set(1.08,1.38,0.54);
+palm.position.set(-0.06,0.02,0.008);
+glove.add(palm);
+
+// ── Laces (between fingers) ───────────────────────────────────────────────────
+function mkLace(x,y,z,rz){
+  const g=new THREE.Group();
+  const main=addShadow(new THREE.Mesh(new THREE.TorusGeometry(0.07,0.018,8,18,Math.PI),mats.laces));
+  g.add(main);
+  g.position.set(x,y,z);
+  g.rotation.z=rz;
+  glove.add(g);
+}
+mkLace(-0.28,1.22,0.14, 0.18);
+mkLace( 0.02,1.30,0.14, 0.06);
+mkLace( 0.30,1.27,0.14,-0.10);
+// Side laces
+mkLace(-0.98,0.45,0.06, 1.45);
+mkLace(-1.01,0.10,0.06, 1.52);
+mkLace(-0.98,-0.28,0.06,1.60);
+
+// ── Stitching (decorative lines on palm) ─────────────────────────────────────
+function mkStitch(pts,mat){
+  const curve=new THREE.CatmullRomCurve3(pts.map(p=>new THREE.Vector3(...p)));
+  const m=addShadow(new THREE.Mesh(new THREE.TubeGeometry(curve,20,0.012,6,false),mat));
+  glove.add(m);
+}
+mkStitch([[-0.55,0.08,0.54],[-0.06,-0.08,0.56],[0.44,0.08,0.54]],mats.stitching);
+mkStitch([[-0.55,-0.25,0.54],[-0.06,-0.40,0.56],[0.44,-0.25,0.54]],mats.stitching);
+
+// ── View presets ──────────────────────────────────────────────────────────────
+const views={
+  front:{pos:[0,0.4,5.2],  target:[0,0.15,0]},
+  back: {pos:[0,0.4,-5.2], target:[0,0.15,0]},
+  side: {pos:[4.5,0.4,1.5],target:[0,0.15,0]},
+  top:  {pos:[0,5.5,0.5],  target:[0,0.15,0]},
+};
+
+window.setView=function(v){
+  document.querySelectorAll('.vbtn').forEach(b=>b.classList.remove('on'));
+  event.target.classList.add('on');
+  const vd=views[v];
+  camera.position.set(...vd.pos);
+  controls.target.set(...vd.target);
+  controls.update();
+};
+
+// ── Animation ─────────────────────────────────────────────────────────────────
+(function animate(){
+  requestAnimationFrame(animate);
+  controls.update();
+  renderer.render(scene,camera);
+})();
+
+// ── Update color (Three.js material) ─────────────────────────────────────────
+window.pickColor=function(zid,ck){
+  const color=COLORS.find(c=>c.k===ck);
+  ST.colors[zid]=color;
+  document.querySelectorAll(`.sw-wrap[data-z="${zid}"]`).forEach(s=>s.classList.toggle('on',s.dataset.k===ck));
+  const cp=document.getElementById('cp-'+zid); if(cp)cp.style.background=color.h;
+  const cn=document.getElementById('cn-'+zid); if(cn)cn.textContent=color.n;
+  // Update Three.js material
+  if(mats[zid]) mats[zid].color.set(color.h);
+  // back also drives thumb (same material)
+  if(zid==='back') mats.thumb.color.set(color.h);
+  updateSummary();
+};
+
+// Flip glove for left-handed
+document.querySelectorAll('input[name="hand"]').forEach(r=>r.addEventListener('change',()=>{
+  ST.hand=r.value;
+  glove.scale.x=r.value==='left'?-1:1;
+  updateSummary();
+}));
+document.querySelectorAll('input[name="size"]').forEach(r=>r.addEventListener('change',()=>{ST.size=r.value;updateSummary();}));
+document.querySelectorAll('input[name="web"]').forEach(r=>r.addEventListener('change',()=>{ST.web=r.value;updateSummary();}));
+document.querySelectorAll('input[name="stiff"]').forEach(r=>r.addEventListener('change',()=>{ST.stiff=r.value;updateSummary();}));
+
 // ── Language ──────────────────────────────────────────────────────────────────
-function setLang(l){
+window.setLang=function(l){
   lang=l;
   document.querySelectorAll('.lb').forEach(b=>b.classList.toggle('on',
     (l==='zh'&&b.textContent.includes('中'))||(l==='en'&&b.textContent==='EN')||(l==='ja'&&b.textContent.includes('日'))));
@@ -425,69 +541,33 @@ function setLang(l){
   document.querySelectorAll('[data-k]').forEach(el=>{const v=t[el.dataset.k];if(v)el.textContent=v;});
   document.querySelectorAll('[data-wk]').forEach(el=>{const v=t.ws[el.dataset.wk];if(v)el.textContent=v;});
   buildZones(); updateSummary();
-}
+};
 
 // ── Step nav ──────────────────────────────────────────────────────────────────
-function go(n){
+window.go=function(n){
   document.querySelectorAll('.sc').forEach(el=>el.classList.remove('on'));
   document.querySelectorAll('.stab').forEach((t,i)=>{
     t.classList.remove('on','done');
     if(i+1<n)t.classList.add('done');
     if(i+1===n)t.classList.add('on');
   });
-  const el=document.getElementById('s'+n);
-  if(el)el.classList.add('on');
+  const el=document.getElementById('s'+n); if(el)el.classList.add('on');
   updateSummary();
-}
+};
 
 // ── Color zones UI ────────────────────────────────────────────────────────────
 function buildZones(){
   const t=T[lang];
   const zl={back:t.back,palm:t.palm,web:t.web,laces:t.laces,binding:t.binding,stitching:t.stitching};
-  const c=document.getElementById('czones');
-  c.innerHTML='';
+  const c=document.getElementById('czones'); c.innerHTML='';
   ZONES.forEach(z=>{
     const sel=ST.colors[z.id];
-    const d=document.createElement('div');
-    d.className='czone';
-    d.innerHTML=`
-      <div class="czone-hdr">
-        <div class="cprev" id="cp-${z.id}" style="background:${sel.h}"></div>
-        <span class="czone-name">${zl[z.id]}</span>
-        <span class="cname-cur" id="cn-${z.id}">${sel.n}</span>
-      </div>
-      <div class="swatches">${COLORS.map(c=>`
-        <div class="sw${c.k===sel.k?' on':''}" style="background:${c.h};${c.k==='white'?'border-color:#3a3a4a':''}"
-             title="${c.n}" data-z="${z.id}" data-k="${c.k}" onclick="pickColor('${z.id}','${c.k}')"></div>
-      `).join('')}</div>`;
+    const d=document.createElement('div'); d.className='czone';
+    d.innerHTML=`<div class="czone-hdr"><div class="cprev" id="cp-${z.id}" style="background:${sel.h}"></div><span class="czone-name">${zl[z.id]}</span><span class="cname-cur" id="cn-${z.id}">${sel.n}</span></div><div class="swatches">${COLORS.map(c=>`<div class="sw-wrap${c.k===sel.k?' on':''}" data-z="${z.id}" data-k="${c.k}" onclick="pickColor('${z.id}','${c.k}')"><div class="sw" style="background:${c.h};${c.h==='#F2EDE4'?'border-color:#3a3a4a;':''}" title="${c.n}"></div><span class="sw-lbl">${c.n}</span></div>`).join('')}</div>`;
     c.appendChild(d);
   });
 }
 
-// ── Pick color ────────────────────────────────────────────────────────────────
-function pickColor(zid,ck){
-  const color=COLORS.find(c=>c.k===ck);
-  ST.colors[zid]=color;
-  document.querySelectorAll(`[data-z="${zid}"]`).forEach(s=>s.classList.toggle('on',s.dataset.k===ck));
-  const cp=document.getElementById('cp-'+zid); if(cp)cp.style.background=color.h;
-  const cn=document.getElementById('cn-'+zid); if(cn)cn.textContent=color.n;
-  const zone=ZONES.find(z=>z.id===zid);
-  zone.els.forEach(eid=>{
-    const el=document.getElementById(eid); if(!el)return;
-    if(zone.grp){
-      el.querySelectorAll('circle,path,line,rect').forEach(ch=>{
-        zone.stroke?ch.setAttribute('stroke',color.h):ch.setAttribute('fill',color.h);
-      });
-    } else if(zone.stroke){
-      el.setAttribute('stroke',color.h);
-    } else {
-      el.setAttribute('fill',color.h);
-    }
-  });
-  updateSummary();
-}
-
-// ── Summary ───────────────────────────────────────────────────────────────────
 function updateSummary(){
   const t=T[lang];
   const zl={back:t.back,palm:t.palm,web:t.web,laces:t.laces,binding:t.binding,stitching:t.stitching};
@@ -498,36 +578,9 @@ function updateSummary(){
     {k:t.stiffness,v:t.sl[ST.stiff]},
     ...ZONES.map(z=>({k:zl[z.id],v:ST.colors[z.id]?.n,c:ST.colors[z.id]?.h})),
   ];
-  document.getElementById('srows').innerHTML=rows.map(r=>`
-    <div class="srow">
-      <span class="skey">${r.k}</span>
-      <span class="sval">${r.c?`<span class="sdot" style="background:${r.c}"></span>`:''}${r.v||'—'}</span>
-    </div>`).join('');
+  document.getElementById('srows').innerHTML=rows.map(r=>`<div class="srow"><span class="skey">${r.k}</span><span class="sval">${r.c?`<span class="sdot" style="background:${r.c}"></span>`:''} ${r.v||'—'}</span></div>`).join('');
 }
 
-// ── Web style SVG ─────────────────────────────────────────────────────────────
-document.querySelectorAll('input[name="web"]').forEach(r=>r.addEventListener('change',()=>{
-  ST.web=r.value;
-  const wv=document.getElementById('wv'), wh=document.getElementById('wh');
-  switch(r.value){
-    case 'i-web':  wv.setAttribute('width','8');wv.setAttribute('x','-4');wh.style.display='';wh.setAttribute('width','28');break;
-    case 'h-web':  wv.setAttribute('width','6');wv.setAttribute('x','-12');wh.style.display='';wh.setAttribute('width','6');break;
-    case 'basket': wv.setAttribute('width','4');wv.setAttribute('x','-2');wh.style.display='';wh.setAttribute('width','4');break;
-    case 'single-post': wv.setAttribute('width','10');wv.setAttribute('x','-5');wh.style.display='none';break;
-    case 'modified-trap': wv.setAttribute('width','8');wv.setAttribute('x','-4');wh.style.display='';wh.setAttribute('y','18');wh.setAttribute('width','28');break;
-  }
-  updateSummary();
-}));
-
-document.querySelectorAll('input[name="hand"]').forEach(r=>r.addEventListener('change',()=>{
-  ST.hand=r.value;
-  document.getElementById('gsvg').style.transform=r.value==='left'?'scaleX(-1)':'none';
-  updateSummary();
-}));
-document.querySelectorAll('input[name="size"]').forEach(r=>r.addEventListener('change',()=>{ST.size=r.value;updateSummary();}));
-document.querySelectorAll('input[name="stiff"]').forEach(r=>r.addEventListener('change',()=>{ST.stiff=r.value;updateSummary();}));
-
-// ── Submit ────────────────────────────────────────────────────────────────────
 async function doSubmit(){
   const t=T[lang];
   const name=document.getElementById('cName').value.trim();
@@ -539,32 +592,27 @@ async function doSubmit(){
   const btn=document.getElementById('submitBtn');
   btn.disabled=true; btn.textContent=t.submitting;
   const payload={
-    hand:ST.hand, size:ST.size, web:ST.web, stiffness:ST.stiff,
+    hand:ST.hand,size:ST.size,web:ST.web,stiffness:ST.stiff,
     colors:Object.fromEntries(Object.entries(ST.colors).map(([k,v])=>[k,v.n])),
     thumbText:document.getElementById('thumbTxt').value,
     pinkyText:document.getElementById('pinkyTxt').value,
     palmText:document.getElementById('palmTxt').value,
     wristText:document.getElementById('wristTxt').value,
     specialNotes:document.getElementById('notesTxt').value,
-    customerName:name, customerEmail:email,
+    customerName:name,customerEmail:email,
     customerPhone:document.getElementById('cPhone').value,
   };
   try{
-    const res=await fetch('https://mao-agent.onrender.com/order',{
-      method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)
-    });
+    const res=await fetch('https://mao-agent.onrender.com/order',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
     if(!res.ok)throw new Error('server error');
     document.querySelectorAll('.sc').forEach(el=>el.style.display='none');
-    document.getElementById('succScreen').style.display='block';
-    document.getElementById('succScreen').querySelector('[data-k="succTitle"]').textContent=t.succTitle;
-    document.getElementById('succScreen').querySelector('[data-k="succMsg"]').textContent=t.succMsg;
-  }catch(e){
-    btn.disabled=false; btn.textContent=t.submit;
-    alert('送出失敗，請稍後再試。');
-  }
+    const sc=document.getElementById('succScreen'); sc.style.display='block';
+    sc.querySelector('[data-k="succTitle"]').textContent=t.succTitle;
+    sc.querySelector('[data-k="succMsg"]').textContent=t.succMsg;
+  }catch(e){btn.disabled=false;btn.textContent=t.submit;alert('送出失敗，請稍後再試。');}
 }
+window.doSubmit=doSubmit;
 
-// ── Init ──────────────────────────────────────────────────────────────────────
 buildZones(); updateSummary();
 </script>
 </body>
