@@ -1,0 +1,35 @@
+services:
+  - type: web
+    name: mao-agent
+    runtime: node
+    buildCommand: npm install
+    startCommand: node server.js
+    plan: free
+    region: singapore
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: LINE_TOKEN
+        sync: false
+      - key: LINE_CHANNEL_SECRET
+        sync: false
+      - key: LINE_USER_ID
+        sync: false
+      - key: GOOGLE_REFRESH_TOKEN
+        sync: false
+      - key: GSC_CLIENT_ID
+        sync: false
+      - key: GSC_CLIENT_SECRET
+        sync: false
+      - key: GSC_REFRESH_TOKEN
+        sync: false
+      - key: GSC_SITE_URL
+        value: https://a-nan53.tw/
+      - key: WP_URL
+        value: https://twm10790205681.admin.metabiz.tw
+      - key: WP_USERNAME
+        value: m10790205@gmail.com
+      - key: WP_APP_PASSWORD
+        sync: false
